@@ -5,6 +5,7 @@ import { useI18n } from '../../i18n';
 import { supabase } from '../../lib/supabase';
 import { MOCK_INSTITUTIONS, MOCK_ANNOUNCEMENTS, MOCK_BOOKS } from '../../lib/mockData';
 import SearchModal from '../search/SearchModal';
+import MapView from '../../components/map/MapView';
 import './HomeScreen.css';
 
 // --- Sub-components (Boutique Style) ---
