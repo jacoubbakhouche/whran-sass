@@ -52,6 +52,7 @@ export const INSTITUTION_TYPES = [
 ];
 
 export const MOCK_INSTITUTIONS = [
+    {
         id: 'mock-inst-1', // Changed to string ID for consistency
         name_ar: 'مدرسة النخبة العالمية',
         name_fr: 'Elite International School',
@@ -104,8 +105,6 @@ export const MOCK_INSTITUTIONS = [
         programs_ar: ['برمجة', 'تصميم جرافيك', 'لغات حية'],
         programs_fr: ['Programmation', 'Design Graphique', 'Langues Vivantes'],
     },
-    {
-        id: 1,
     {
         id: 2,
         name_ar: 'جامعة هواري بومدين للعلوم والتكنولوجيا',
