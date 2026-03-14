@@ -217,14 +217,10 @@ export default function HomeScreen() {
       {/* SECTION 6: Library Spotlight */}
       <section className="home-section-v2">
         <div className="section-header">
-          <h2>من المتجر</h2>
-          <Link to="/store" className="view-link">عرض المتجر <FiChevronLeft /></Link>
+          <h2>اكتشف القريب منك</h2>
+          <button className="view-all" onClick={() => navigate('/map')}>الخريطة الكاملة 〉</button>
         </div>
-        <div className="h-scroll boutique-scroll">
-          {loading ? [1,2,3].map(n => <div key={n} className="skeleton prod-skelton" />) :
-            products.map(p => <ProductMiniCard key={p.id} product={p} />)
-          }
-        </div>
+        <MapView institutions={institutions} height="400px" />
       </section>
 
       {/* SECTION 7: Map CTA */}
