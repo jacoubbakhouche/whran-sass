@@ -215,26 +215,6 @@ export default function HomeScreen() {
         </div>
       </section>
 
-      {/* SECTION 6: Library Spotlight */}
-      <section className="home-section-v2">
-        <div className="section-header">
-          <h2>اكتشف القريب منك</h2>
-          <button className="view-all" onClick={() => navigate('/map')}>الخريطة الكاملة 〉</button>
-        </div>
-        <MapView institutions={institutions} height="400px" />
-      </section>
-
-      {/* SECTION 7: Map CTA */}
-      <div className="home-map-cta" onClick={() => navigate('/map')}>
-        <div className="cta-content">
-          <h3>استكشف الخريطة</h3>
-          <p>تصفح المؤسسات القريبة منك بشكل تفاعلي</p>
-        </div>
-        <div className="cta-icon">
-          <FiMap size={24} />
-        </div>
-      </div>
-
       {/* SEARCH MODAL OVERLAY */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
