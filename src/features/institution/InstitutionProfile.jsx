@@ -1,0 +1,285 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useI18n } from '../../i18n';
+import { INSTITUTION_TYPES, BALADIYAS } from '../../lib/mockData';
+import MapView from '../../components/map/MapView';
+import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiUsers, FiShare2, FiChevronRight, FiChevronLeft, FiHeart } from 'react-icons/fi';
+import { supabase } from '../../lib/supabase';
+import './InstitutionProfile.css';
+
+function StarRating({ rating }) {
+    return (
+        <div className="star-rating">
+            {[1, 2, 3, 4, 5].map(star => (
+                <FiStar
+                    key={star}
+                    size={14}
+                    fill={star <= Math.round(rating) ? '#F59E0B' : 'transparent'}
+                    stroke={star <= Math.round(rating) ? '#F59E0B' : '#CBD5E1'}
+                />
+            ))}
+        </div>
+    );
+}
+
+export default function InstitutionProfile() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { t, locale, dir, getField } = useI18n();
+    const [institution, setInstitution] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            setLoading(true);
+            try {
+                // Complex query to get profile with joins
+                const { data, error } = await supabase
+                    .from('institutions')
+                    .select(`
+                        *,
+                        wilayas (
+                            name_ar,
+                            name_fr
+                        ),
+                        institution_images (*),
+                        institution_services (*),
+                        announcements (*),
+                        reviews (
+                            *,
+                            profiles (
+                                full_name,
+                                avatar_url
+                            )
+                        )
+                    `)
+                    .eq('id', id)
+                    .single();
+                
+                if (error) throw error;
+                if (data) setInstitution(data);
+            } catch (err) {
+                console.error('Error fetching institution profile:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="profile-loading" style={{ padding: '100px 0', textAlign: 'center' }}>
+                <p>{locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}</p>
+            </div>
+        );
+    }
+
+    if (!institution) {
+        return (
+            <div className="profile-not-found" dir={dir}>
+                <div className="container">
+                    <span className="profile-not-found__icon">🏫</span>
+                    <h2>{locale === 'ar' ? 'المؤسسة غير موجودة' : 'Établissement non trouvé'}</h2>
+                    <Link to="/search" className="btn-black">
+                        {locale === 'ar' ? 'العودة للبحث' : 'Retour à la recherche'}
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === institution.type) || INSTITUTION_TYPES[0];
+    const services = institution.institution_services || [];
+    const announcements = institution.announcements || [];
+    const reviews = institution.reviews || [];
+
+    return (
+        <div className="profile-page" dir={dir}>
+            {/* Header / Nav */}
+            <div className="profile-header-nav">
+                <button className="icon-btn" onClick={() => navigate(-1)}>
+                    {dir === 'rtl' ? <FiChevronRight size={24} /> : <FiChevronLeft size={24} />}
+                </button>
+                <div className="header-actions">
+                    <button className="icon-btn">
+                        <FiHeart size={22} />
+                    </button>
+                    <button className="icon-btn" style={{ marginInlineStart: '8px' }}>
+                        <FiShare2 size={20} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Hero Section */}
+            <div className="profile-hero-card">
+                <div 
+                    className="profile-hero-card__bg" 
+                    style={{ 
+                        backgroundColor: typeInfo?.color + '20',
+                        backgroundImage: institution.cover_url ? `url(${institution.cover_url})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    {!institution.cover_url && (
+                        <div className="profile-hero-card__icon" style={{ color: typeInfo?.color }}>
+                            {typeInfo?.icon}
+                        </div>
+                    )}
+                </div>
+                <div className="profile-hero-card__content">
+                    {institution.logo_url && (
+                        <div className="profile-logo-floating">
+                            <img src={institution.logo_url} alt="Logo" />
+                        </div>
+                    )}
+                    <span className="tag" style={{ background: typeInfo?.color + '15', color: typeInfo?.color }}>
+                        {getField(typeInfo, 'name')}
+                    </span>
+                    <h1 className="profile-title">{getField(institution, 'name')}</h1>
+                    
+                    <div className="profile-meta">
+                        <div className="profile-meta__item">
+                            <FiMapPin size={14} />
+                            <span>
+                                {institution.commune || ''}
+                                {institution.commune ? '، ' : ''}
+                                {getField(institution.wilayas, 'name')}
+                            </span>
+                        </div>
+                        <div className="profile-meta__item profile-rating">
+                            <FiStar size={14} fill="#F59E0B" stroke="#F59E0B" />
+                            <span>{institution.rating_avg || 0}</span>
+                            <span className="text-muted">({institution.rating_count || 0} {t('reviews')})</span>
+                        </div>
+                        {institution.students_count && (
+                            <div className="profile-meta__item">
+                                <FiUsers size={14} />
+                                <span>{institution.students_count.toLocaleString()} {t('students')}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="profile-content">
+                {/* About */}
+                <section className="profile-section">
+                    <h2 className="section-title">
+                        {locale === 'ar' ? 'حول المؤسسة' : 'À propos'}
+                    </h2>
+                    <p className="section-text">{institution.description}</p>
+                    
+                    <div className="profile-features-grid" style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
+                        {institution.has_transport && <span className="tag-outline">🚍 {locale === 'ar' ? 'نقل مدرسي' : 'Transport'}</span>}
+                        {institution.has_canteen && <span className="tag-outline">🍱 {locale === 'ar' ? 'مطعم' : 'Cantine'}</span>}
+                        {institution.is_private && <span className="tag-outline">💎 {locale === 'ar' ? 'خاصة' : 'Privé'}</span>}
+                    </div>
+                </section>
+                
+                {/* Services / Programs omitted if empty... */}
+
+                {/* Contact Info Grid */}
+                <section className="profile-section contact-section">
+                    <h2 className="section-title">{t('contactInfo')}</h2>
+                    <div className="contact-grid">
+                        {institution.address_detail && (
+                            <div className="contact-item">
+                                <div className="contact-icon"><FiMapPin size={18} /></div>
+                                <div className="contact-details">
+                                    <span className="contact-label">{t('address')}</span>
+                                    <span className="contact-value">{institution.address_detail}</span>
+                                </div>
+                            </div>
+                        )}
+                        {institution.phone && (
+                            <div className="contact-item">
+                                <div className="contact-icon"><FiPhone size={18} /></div>
+                                <div className="contact-details">
+                                    <span className="contact-label">{t('phone')}</span>
+                                    <a href={`tel:${institution.phone}`} className="contact-value link">
+                                        {institution.phone}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                        {institution.email && (
+                            <div className="contact-item">
+                                <div className="contact-icon"><FiMail size={18} /></div>
+                                <div className="contact-details">
+                                    <span className="contact-label">{t('email')}</span>
+                                    <a href={`mailto:${institution.email}`} className="contact-value link">
+                                        {institution.email}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                        {institution.website && (
+                            <div className="contact-item">
+                                <div className="contact-icon"><FiGlobe size={18} /></div>
+                                <div className="contact-details">
+                                    <span className="contact-label">{t('website')}</span>
+                                    <a href={institution.website} target="_blank" rel="noopener" className="contact-value link">
+                                        {institution.website.replace('https://', '')}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* Map View */}
+                <section className="profile-section">
+                    <h2 className="section-title">{t('openOnMap')}</h2>
+                    <div className="map-container-rounded">
+                        <MapView
+                            institutions={[institution]}
+                            height="200px"
+                        />
+                    </div>
+                </section>
+
+                {/* Reviews */}
+                <section className="profile-section">
+                    <div className="section-header">
+                        <h2 className="section-title" style={{ marginBottom: 0 }}>{t('reviews')}</h2>
+                        <button className="tag-black">{t('writeReview')}</button>
+                    </div>
+
+                    <div className="reviews-list">
+                        {reviews.length > 0 ? reviews.map(review => (
+                            <div key={review.id} className="review-card">
+                                <div className="review-card__header">
+                                    <div className="review-avatar">
+                                        {(review.profiles?.full_name || 'U').charAt(0)}
+                                    </div>
+                                    <div className="review-meta-info">
+                                        <h4>{review.profiles?.full_name || 'User'}</h4>
+                                        <span>{new Date(review.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <StarRating rating={review.rating} />
+                                </div>
+                                <p className="review-comment">
+                                    {review.comment}
+                                </p>
+                            </div>
+                        )) : (
+                            <p className="no-reviews">
+                                {locale === 'ar' ? 'لا توجد تقييمات بعد' : 'Aucun avis pour le moment'}
+                            </p>
+                        )}
+                    </div>
+                </section>
+            </div>
+
+            {/* Bottom Sticky Action */}
+            <div className="profile-sticky-action">
+                <button className="btn-pill btn-primary w-full shadow-lg">
+                    <FiPhone size={18} />
+                    {locale === 'ar' ? 'اتصل الآن' : 'Appeler maintenant'}
+                </button>
+            </div>
+        </div>
+    );
+}

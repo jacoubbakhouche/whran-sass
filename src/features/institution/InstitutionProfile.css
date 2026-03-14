@@ -1,0 +1,38 @@
+.inst-profile {
+  background: var(--bg-main);
+}
+
+.inst-profile__hero {
+  height: 280px;
+  position: relative;
+  background: #F3F4F6;
+}
+
+.inst-profile__hero-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.inst-profile__header {
+  margin-top: -80px;
+  padding: 0 var(--space-8);
+  position: relative;
+  z-index: 10;
+}
+
+.inst-profile__logo {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  border: 6px solid var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-5);
+}
+
+.inst-profile__logo img { width: 100%; height: 100%; object-fit: cover; }

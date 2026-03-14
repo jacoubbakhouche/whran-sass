@@ -1,0 +1,125 @@
+.user-type-footer {
+  margin-top: var(--space-12);
+  text-align: center;
+}
+
+.admin-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  opacity: 0.6;
+}
+
+.admin-link-btn:hover {
+  color: var(--primary);
+  opacity: 1;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.user-type-screen {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-12) var(--space-6);
+  overflow-x: hidden;
+}
+
+.user-type-content {
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.user-type-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.user-type-header h1 {
+  font-size: 2.25rem;
+  margin-bottom: var(--space-2);
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.user-type-header p {
+  font-size: 1.05rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.user-type-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.user-type-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: var(--transition);
+  box-shadow: var(--shadow-md);
+}
+
+.user-type-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: var(--space-4);
+  background: var(--bg-main);
+  color: var(--primary);
+}
+
+.user-type-card h3 {
+  font-size: 1.35rem;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+.user-type-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.user-type-bg-glow {
+  position: absolute;
+  top: 10%;
+  right: -30%;
+  width: 100vw;
+  height: 100vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.04) 0%, transparent 70%);
+  filter: blur(60px);
+  z-index: 1;
+}
