@@ -215,6 +215,17 @@ export default function HomeScreen() {
         </div>
       </section>
 
+      {/* SECTION 7: Map CTA */}
+      <div className="home-map-cta" onClick={() => navigate('/map')}>
+        <div className="cta-content">
+          <h3>استكشف الخريطة</h3>
+          <p>تصفح المؤسسات القريبة منك بشكل تفاعلي</p>
+        </div>
+        <div className="cta-icon">
+          <FiMap size={24} />
+        </div>
+      </div>
+
       {/* SEARCH MODAL OVERLAY */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
