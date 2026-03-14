@@ -8,7 +8,9 @@ import './StoreView.css';
 function BookCard({ product, layout = 'vertical' }) {
   const navigate = useNavigate();
   const coverUrl = product.cover_url
-    ? supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl
+    ? (product.cover_url.startsWith('/mockups/') 
+        ? product.cover_url 
+        : supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl)
     : null;
 
   return (

@@ -20,7 +20,9 @@ function getTypeColor(type) {
 /* ─── Institution Card ─── */
 function InstitutionCard({ inst, delay = 0 }) {
   const logoUrl = inst.logo_url
-    ? supabase.storage.from('institution-logos').getPublicUrl(inst.logo_url).data.publicUrl
+    ? (inst.logo_url.startsWith('/mockups/') 
+        ? inst.logo_url 
+        : supabase.storage.from('institution-logos').getPublicUrl(inst.logo_url).data.publicUrl)
     : null;
   const color = getTypeColor(inst.type);
   return (
@@ -63,7 +65,9 @@ function InstitutionCard({ inst, delay = 0 }) {
 /* ─── Product Card ─── */
 function ProductCard({ product, delay = 0 }) {
   const coverUrl = product.cover_url
-    ? supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl
+    ? (product.cover_url.startsWith('/mockups/') 
+        ? product.cover_url 
+        : supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl)
     : null;
   const hasDiscount = product.discount_price && product.discount_price < product.price;
   return (

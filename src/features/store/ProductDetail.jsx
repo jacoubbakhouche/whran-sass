@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
+import { MOCK_BOOKS } from '../../lib/mockData';
 import './ProductDetail.css';
 
 export default function ProductDetail() {
@@ -13,6 +14,17 @@ export default function ProductDetail() {
     useEffect(() => {
         const fetchProduct = async () => {
             setLoading(true);
+            
+            // Check if it's a mock ID
+            if (id?.startsWith('mock-')) {
+                const mock = MOCK_BOOKS.find(b => b.id === id);
+                if (mock) {
+                    setBook(mock);
+                    setLoading(false);
+                    return;
+                }
+            }
+
             try {
                 const { data, error } = await supabase
                     .from('products')
@@ -49,7 +61,9 @@ export default function ProductDetail() {
     }
 
     const coverUrl = book.cover_url
-        ? supabase.storage.from('product-covers').getPublicUrl(book.cover_url).data.publicUrl
+        ? (book.cover_url.startsWith('/mockups/') 
+            ? book.cover_url 
+            : supabase.storage.from('product-covers').getPublicUrl(book.cover_url).data.publicUrl)
         : null;
 
     return (

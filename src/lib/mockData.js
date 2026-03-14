@@ -53,10 +53,11 @@ export const INSTITUTION_TYPES = [
 
 export const MOCK_INSTITUTIONS = [
     {
-        id: 1,
-        name_ar: 'جامعة الجزائر 1 - بن يوسف بن خدة',
-        name_fr: 'Université d\'Alger 1 - Benyoucef Benkhedda',
+        id: 'mock-inst-1', // Changed to string ID for consistency
+        name_ar: 'مدرسة النخبة العالمية',
+        name_fr: 'Elite International School',
         type_id: 5,
+        logo_url: '/mockups/school_logo.png',
         wilaya_id: 16,
         baladiya_id: 1601,
         city_ar: 'الجزائر العاصمة',
@@ -406,7 +407,7 @@ export const MOCK_BOOKS = [
         discount_price: 790,
         status: 'active',
         description: 'كتاب تفاعلي متميز لتبسيط الرياضيات للأطفال بطرق حديثة ومبسطة.',
-        cover_url: null, // Placeholder will show 📚
+        cover_url: '/mockups/math_cover.png',
         rating_avg: 4.8
     },
     {
@@ -427,7 +428,7 @@ export const MOCK_BOOKS = [
         discount_price: 1150,
         status: 'active',
         description: 'رواية أدبية معاصرة تأخذك في رحلة مشوقة عبر تاريخ وزوايا الجزائر الجميلة.',
-        cover_url: null,
+        cover_url: '/mockups/novel_cover.png',
         rating_avg: 4.9
     }
 ];
