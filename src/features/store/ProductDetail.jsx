@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
-import { MOCK_BOOKS } from '../../lib/mockData';
+
 import './ProductDetail.css';
 
 export default function ProductDetail() {
@@ -15,20 +15,12 @@ export default function ProductDetail() {
         const fetchProduct = async () => {
             setLoading(true);
             
-            // Check if it's a mock ID
-            if (id?.startsWith('mock-')) {
-                const mock = MOCK_BOOKS.find(b => b.id === id);
-                if (mock) {
-                    setBook(mock);
-                    setLoading(false);
-                    return;
-                }
-            }
+
 
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .select('*')
+                    .select('*, profiles(full_name)')
                     .eq('id', id)
                     .single();
                 
@@ -61,7 +53,7 @@ export default function ProductDetail() {
     }
 
     const coverUrl = book.cover_url
-        ? (book.cover_url.startsWith('/mockups/') 
+        ? (book.cover_url.startsWith('http') || book.cover_url.startsWith('/mockups/') 
             ? book.cover_url 
             : supabase.storage.from('product-covers').getPublicUrl(book.cover_url).data.publicUrl)
         : null;
@@ -87,7 +79,15 @@ export default function ProductDetail() {
                             {coverUrl ? <img src={coverUrl} alt={book.name} /> : <div className="placeholder-book">📚</div>}
                         </div>
                         <h2 className="product-card-floating__title">{book.name}</h2>
-                        <p className="product-card-floating__author">بواسطة {book.author || 'الجزائر التعليمية'}</p>
+                        <p 
+                            className="product-card-floating__author"
+                            onClick={() => {
+                                if (book.seller_id) navigate(`/store/profile/${book.seller_id}`);
+                            }}
+                            style={{ cursor: 'pointer', color: 'var(--accent-warm)' }}
+                        >
+                            بواسطة {book.profiles?.full_name || book.author || 'الجزائر التعليمية'}
+                        </p>
                         <div className="product-card-floating__rating">
                             {[1, 2, 3, 4, 5].map(star => (
                                 <FiStar 

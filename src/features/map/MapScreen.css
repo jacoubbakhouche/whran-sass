@@ -18,7 +18,7 @@
   top: var(--space-8);
   left: var(--space-6);
   right: var(--space-6);
-  z-index: 1000;
+  z-index: 2000;
   background: var(--bg-surface);
   border-radius: var(--radius-xl);
   padding: var(--space-3) var(--space-5);
@@ -58,7 +58,7 @@
   top: 100px;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .map-type-filters .chip {

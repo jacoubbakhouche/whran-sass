@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiShoppingBag } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
-import { MOCK_BOOKS } from '../../lib/mockData';
+
 import './StoreView.css';
 
 function BookCard({ product, layout = 'vertical' }) {
   const navigate = useNavigate();
   const coverUrl = product.cover_url
-    ? (product.cover_url.startsWith('/mockups/') 
+    ? (product.cover_url.startsWith('http') || product.cover_url.startsWith('/mockups/') 
         ? product.cover_url 
         : supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl)
     : null;
@@ -16,9 +16,8 @@ function BookCard({ product, layout = 'vertical' }) {
   return (
     <div 
       className={`store-book-card ${layout}`} 
-      onClick={() => navigate(`/store/book/${product.id}`)}
     >
-      <div className="store-book-card__cover">
+      <div className="store-book-card__cover" onClick={() => navigate(`/store/book/${product.id}`)}>
         {coverUrl ? (
           <img src={coverUrl} alt={product.name} />
         ) : (
@@ -28,8 +27,20 @@ function BookCard({ product, layout = 'vertical' }) {
         )}
       </div>
       <div className="store-book-card__info">
-        <h4 className="store-book-card__title">{product.name}</h4>
-        <p className="store-book-card__author">{product.author || 'الجزائر التعليمية'}</p>
+        <h4 className="store-book-card__title" onClick={() => navigate(`/store/book/${product.id}`)}>{product.name}</h4>
+        <div className="store-book-card__meta">
+            <p 
+                className="store-book-card__author" 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (product.seller_id) navigate(`/store/profile/${product.seller_id}`);
+                }}
+                style={{ cursor: 'pointer', color: 'var(--accent-warm)' }}
+            >
+                {product.profiles?.full_name || product.author || 'الجزائر التعليمية'}
+            </p>
+            <span className="store-book-card__price">{product.price} دج</span>
+        </div>
       </div>
     </div>
   );
@@ -54,18 +65,17 @@ export default function StoreView() {
       setLoading(true);
       const { data: allProds } = await supabase
         .from('products')
-        .select('*')
+        .select('*, profiles(full_name)')
         .eq('status', 'active')
         .limit(20);
       
       if (allProds) {
-        const combined = [...MOCK_BOOKS, ...allProds];
-        setProducts(combined);
+        setProducts(allProds);
         // Simulate "My Library" with a few items
-        setMyLibrary(combined.slice(0, 5));
+        setMyLibrary(allProds.slice(0, 5));
       } else {
-        setProducts(MOCK_BOOKS);
-        setMyLibrary(MOCK_BOOKS);
+        setProducts([]);
+        setMyLibrary([]);
       }
       setLoading(false);
     };

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { MOCK_INSTITUTIONS, MOCK_BOOKS, MOCK_ANNOUNCEMENTS } from '../../lib/mockData';
+
 import './SearchResults.css';
 
 /* ─── Type color helper ─── */
@@ -160,13 +160,7 @@ export default function SearchResults() {
     if (verified) query_builder = query_builder.eq('verified', true);
     const { data } = await query_builder.limit(30).order('rating_avg', { ascending: false });
     
-    // Add mock institutions
-    const mocks = MOCK_INSTITUTIONS.map(m => ({
-      ...m,
-      type: m.type_id === 5 ? 'جامعة' : (m.type_id === 4 ? 'ثانوية' : 'مدرسة')
-    })).filter(m => !q || m.name_ar.includes(q));
-    
-    setInstitutions([...mocks, ...(data || [])]);
+    setInstitutions(data || []);
     setLoading(false);
   };
 
@@ -179,8 +173,7 @@ export default function SearchResults() {
       .eq('status', 'active');
     if (q) query_builder = query_builder.ilike('name', `%${q}%`);
     const { data } = await query_builder.limit(20);
-    const mocks = MOCK_BOOKS.filter(b => !q || b.name.includes(q));
-    setProducts([...mocks, ...(data || [])]);
+    setProducts(data || []);
     setLoading(false);
   };
 
@@ -193,8 +186,7 @@ export default function SearchResults() {
       .eq('is_active', true);
     if (q) query_builder = query_builder.ilike('title', `%${q}%`);
     const { data } = await query_builder.limit(20).order('created_at', { ascending: false });
-    const mocks = MOCK_ANNOUNCEMENTS.filter(a => !q || a.title_ar.includes(q));
-    setAnnouncements([...mocks, ...(data || [])]);
+    setAnnouncements(data || []);
     setLoading(false);
   };
 

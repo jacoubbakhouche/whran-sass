@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import { FiShoppingBag, FiPackage, FiMessageCircle, FiTrendingUp, FiLogOut, FiMenu, FiX, FiPlusCircle } from 'react-icons/fi';
+import { FiShoppingBag, FiPackage, FiMessageCircle, FiTrendingUp, FiLogOut, FiMenu, FiX, FiPlusCircle, FiUser } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import './StoreLayout.css';
 
@@ -54,6 +54,7 @@ export default function StoreLayout() {
         { path: '/vendor/inventory', icon: <FiPackage />, label: locale === 'ar' ? 'المنتجات' : 'Produits' },
         { path: '/vendor/orders', icon: <FiMessageCircle />, label: locale === 'ar' ? 'الطلبات' : 'Commandes' },
         { path: '/vendor/analytics', icon: <FiTrendingUp />, label: locale === 'ar' ? 'المبيعات' : 'Ventes' },
+        { path: '/vendor/profile', icon: <FiUser />, label: locale === 'ar' ? 'الملف الشخصي' : 'Profil' },
     ];
 
     return (
@@ -104,13 +105,17 @@ export default function StoreLayout() {
                     </div>
                     <div className="store-topbar__user">
                         <div className="store-topbar__info">
-                            <span className="store-topbar__name">{profile?.full_name}</span>
+                            <span className="store-topbar__name">{profile?.store_name || profile?.full_name} <small style={{opacity: 0.5, fontSize: '0.7em'}}>(ID: {profile?.id?.slice(0,8)})</small></span>
                             <span className="store-topbar__role">
                                 {profile?.wilaya} • {profile?.role === 'admin' ? 'الأدمن' : (locale === 'ar' ? 'بائع معتمد' : 'Vendeur Certifié')}
                             </span>
                         </div>
                         <div className="store-topbar__avatar">
-                            {profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'V'}
+                            {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit'}} />
+                            ) : (
+                                (profile?.store_name || profile?.full_name)?.split(' ').map(n => n[0]).join('').toUpperCase() || 'V'
+                            )}
                         </div>
                     </div>
                 </header>

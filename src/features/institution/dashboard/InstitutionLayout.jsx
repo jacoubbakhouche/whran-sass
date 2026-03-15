@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
-import { FiGrid, FiUser, FiBell, FiMessageSquare, FiTrendingUp, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
+import { FiGrid, FiUser, FiBell, FiMessageSquare, FiTrendingUp, FiLogOut, FiMenu, FiX, FiLayers } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import './InstitutionLayout.css';
@@ -47,57 +47,12 @@ export default function InstitutionLayout() {
     // RegistrationGuard handles 'suspended', 'pending' (account level), and 'rejected' (account level) labels.
     // Institution-specific statuses like 'draft' or 'info_requested' are handled here for onboarding.
 
-    // Stage 2: No institution record yet or record is DRAFT/INFO_REQUESTED -> Show Onboarding
-    if (!institution || (institution && (institution.status === 'draft' || institution.status === 'info_requested'))) {
-        return (
-            <InstitutionOnboarding 
-                onComplete={fetchData} 
-                status={institution?.status}
-                rejectionReason={institution?.rejection_reason}
-            />
-        );
+    // Simplified Stage: Show Onboarding if not active
+    if (!institution || institution.status === 'draft') {
+        return <InstitutionOnboarding onComplete={fetchData} />;
     }
 
-    // Note: RegistrationGuard catches 'pending' at the account level.
-    // Here we handle cases where the profile might be active but the specific institution record is still being processed.
-    if (institution.status === 'submitted' || institution.status === 'under_review') {
-        return (
-            <div className="status-page" dir={dir}>
-                <div className="status-card">
-                    <div className="status-icon pending">⏳</div>
-                    <h1>{institution.status === 'under_review' ? (locale === 'ar' ? 'طلبك قيد الدراسة حالياً' : 'Dossier en cours d\'examen') : (locale === 'ar' ? 'بانتظار موافقة الإدارة' : 'En attente d\'approbation')}</h1>
-                    <p>
-                        {locale === 'ar' 
-                            ? 'لقد استلمنا ملف مؤسستك بنجاح. حسابك حالياً بانتظار مراجعة وقبول الإدارة قبل تفعيل لوحة التحكم.' 
-                            : 'Nous avons bien reçu votre dossier. Votre compte est en attente de validation par l\'administration.'}
-                    </p>
-                    <div className="status-badge">
-                        {locale === 'ar' ? 'الحالة الحالية:' : 'Statut actuel:'} {institution.status}
-                    </div>
-                    <button onClick={handleSignOut} className="btn-secondary" style={{ marginTop: '20px' }}>{t('logout')}</button>
-                </div>
-            </div>
-        );
-    }
-
-    // Rejection state
-    if (institution.status === 'rejected') {
-        return (
-            <div className="status-page" dir={dir}>
-                <div className="status-card">
-                    <div className="status-icon rejected">❌</div>
-                    <h1>{locale === 'ar' ? 'تم رفض الطلب' : 'Demande refusée'}</h1>
-                    <div className="rejection-box">
-                        <p>{institution.rejection_reason || (locale === 'ar' ? 'يرجى مراجعة الإدارة لمزيد من التفاصيل.' : 'Veuillez contacter l\'administration.')}</p>
-                    </div>
-                    <button onClick={() => setInstitution({ ...institution, status: 'draft' })} className="btn-primary">
-                        {locale === 'ar' ? 'تعديل البيانات وإعادة الإرسال' : 'Modifier et renvoyer'}
-                    </button>
-                    <button onClick={handleSignOut} className="btn-secondary" style={{ marginTop: '10px' }}>{t('logout')}</button>
-                </div>
-            </div>
-        );
-    }
+    // Default: Show Dashboard (No longer blocking for under_review/rejected for now as requested)
 
     const navItems = [
         { path: '/institution-admin', icon: <FiGrid />, label: locale === 'ar' ? 'نظرة عامة' : 'Aperçu', end: true },

@@ -35,7 +35,7 @@ export default function VendorOverview() {
                     .select(`
                         id, quantity, total_price, order_id,
                         products!inner(seller_id),
-                        orders!inner(created_at, buyer_id)
+                        orders!inner(created_at, user_id)
                     `)
                     .eq('products.seller_id', user.id);
                 
@@ -44,7 +44,7 @@ export default function VendorOverview() {
                 const revenue = itemData.reduce((sum, item) => sum + (item.total_price || 0), 0);
                 const uniqueOrders = new Set(itemData.map(i => i.order_id)).size;
                 const totalQuantity = itemData.reduce((sum, item) => sum + (item.quantity || 0), 0);
-                const uniqueCustomers = new Set(itemData.map(i => i.orders.buyer_id)).size;
+                const uniqueCustomers = new Set(itemData.map(i => i.orders.user_id)).size;
 
                 // 3. Chart Data (Last 7 Months)
                 const monthsAr = ['جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];

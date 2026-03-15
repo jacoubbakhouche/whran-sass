@@ -26,7 +26,7 @@ export default function OrderManager() {
                 .select(`
                     id, quantity, unit_price, total_price,
                     products!inner(id, name, seller_id, cover_url),
-                    orders!inner(id, status, created_at, total_amount, buyer_id, profiles(full_name, phone))
+                    orders!inner(id, status, created_at, total_amount, user_id, profiles(full_name, phone))
                 `)
                 .eq('products.seller_id', user.id);
             
@@ -66,7 +66,7 @@ export default function OrderManager() {
             const order = orders.find(o => o.id === orderId);
             if (order) {
                 await supabase.from('notifications').insert({
-                    user_id: order.buyer_id, // Use buyer_id from order
+                    user_id: order.user_id, // Use user_id from order
                     type: 'order_update',
                     title: 'تحديث في حالة طلبك 📦',
                     message: `حالة طلبك رقم ${orderId.slice(0,8)} أصبحت الآن: ${newStatus}`

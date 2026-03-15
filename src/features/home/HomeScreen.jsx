@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FiBell, FiSearch, FiMap, FiChevronLeft, FiPlusCircle } from 'react-icons/fi';
 import { useI18n } from '../../i18n';
 import { supabase } from '../../lib/supabase';
-import { MOCK_INSTITUTIONS, MOCK_ANNOUNCEMENTS, MOCK_BOOKS } from '../../lib/mockData';
+
 import SearchModal from '../search/SearchModal';
 import MapView from '../../components/map/MapView';
 import './HomeScreen.css';
@@ -108,14 +108,9 @@ export default function HomeScreen() {
 
     const [insts, anns, prods] = await Promise.all([instQ, annQ, prodQ]);
     
-    // Prefix with Mock Data for "experimental" visibility
-    const finalInsts = [...MOCK_INSTITUTIONS.slice(0, 3).map(m => ({ ...m, status: 'active', type: m.type_id === 5 ? 'جامعة' : (m.type_id === 4 ? 'ثانوية' : 'مدرسة') })), ...(insts.data || [])];
-    const finalAnns = [...MOCK_ANNOUNCEMENTS, ...(anns.data || [])];
-    const finalProds = [...MOCK_BOOKS, ...(prods.data || [])];
-
-    setInstitutions(finalInsts);
-    setAnnouncements(finalAnns);
-    setProducts(finalProds);
+    setInstitutions(insts.data || []);
+    setAnnouncements(anns.data || []);
+    setProducts(prods.data || []);
     
     setLoading(false);
   }, [selectedWilaya]);

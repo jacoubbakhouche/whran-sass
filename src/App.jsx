@@ -8,6 +8,7 @@ import MapScreen from './features/map/MapScreen';
 import SearchResults from './features/search/SearchResults';
 import StoreView from './features/store/StoreView';
 import ProductDetail from './features/store/ProductDetail';
+import StoreProfile from './features/store/StoreProfile';
 import ProfileScreen from './features/user/ProfileScreen';
 import InstitutionProfile from './features/institution/InstitutionProfile';
 import AdminApp from './features/admin/AdminApp';
@@ -23,6 +24,8 @@ import InventoryManager from './features/vendor/InventoryManager';
 import OrderManager from './features/vendor/OrderManager';
 import VendorOverview from './features/vendor/components/VendorOverview';
 import StoreLayout from './features/vendor/StoreLayout';
+import Analytics from './features/vendor/Analytics';
+import StoreProfileEditor from './features/vendor/StoreProfileEditor';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RegistrationGuard from './components/auth/RegistrationGuard';
 import AccountStatusScreen from './features/auth/AccountStatusScreen';
@@ -79,6 +82,7 @@ function AppContent() {
       <Route path="/search"  element={<UserLayout><SearchResults /></UserLayout>} />
       <Route path="/store"   element={<UserLayout><StoreView /></UserLayout>} />
       <Route path="/store/book/:id" element={<UserLayout><ProductDetail /></UserLayout>} />
+      <Route path="/store/profile/:id" element={<UserLayout><StoreProfile /></UserLayout>} />
       <Route path="/cart" element={<UserLayout><CartScreen /></UserLayout>} />
       <Route path="/profile" element={<UserLayout><ProfileScreen /></UserLayout>} />
 
@@ -126,11 +130,8 @@ function AppContent() {
             <Route index element={<VendorOverview />} />
             <Route path="inventory" element={<InventoryManager />} />
             <Route path="orders" element={<OrderManager />} />
-            <Route path="analytics" element={
-              <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-                <h2>📈 إحصائيات</h2><p style={{ opacity: 0.5 }}>قريباً</p>
-              </div>
-            } />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="profile" element={<StoreProfileEditor />} />
           </Route>
         </Route>
       </Route>

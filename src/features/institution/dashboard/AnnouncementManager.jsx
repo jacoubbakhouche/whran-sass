@@ -47,9 +47,17 @@ export default function AnnouncementManager() {
         }
         setFormLoading(true);
         try {
+            // Map title_ar and content_ar to legacy columns to satisfy NOT NULL constraints if they still exist
+            const payload = {
+                ...newAnn,
+                title: newAnn.title_ar,
+                content: newAnn.content_ar,
+                institution_id: institution.id
+            };
+
             const { data, error } = await supabase
                 .from('announcements')
-                .insert([{ ...newAnn, institution_id: institution.id }])
+                .insert([payload])
                 .select();
             
             if (error) throw error;

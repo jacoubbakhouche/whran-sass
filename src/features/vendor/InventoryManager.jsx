@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useI18n } from '../../i18n';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiUpload, FiBox } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiX, FiUpload, FiBox, FiTag, FiDollarSign, FiFileText, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import './InventoryManager.css';
@@ -18,7 +18,7 @@ export default function InventoryManager() {
     
     // Form State
     const [formData, setFormData] = useState({
-        name: '', price: '', stock_qty: '', category_id: '',
+        name: '', price: '', stock_quantity: '', category_id: '',
         description: '', cover_url: '', image_url_2: '', image_url_3: '',
         is_active: true
     });
@@ -47,15 +47,31 @@ export default function InventoryManager() {
                 .order('name_ar');
             if (cats) setCategories(cats);
 
-            const { data, error } = await supabase
+            console.log('Querying products for seller_id:', user.id);
+            let { data, error } = await supabase
                 .from('products')
                 .select('*, product_categories(name_ar, name_fr)')
                 .eq('seller_id', user.id);
             
+            if (error) {
+                console.error('Inventory Fetch Query Error (with join):', error);
+                // Fallback to simple query if join fails
+                const fallback = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('seller_id', user.id);
+                data = fallback.data;
+                error = fallback.error;
+            }
+            
             if (error) throw error;
-            if (data) setProducts(data);
+            
+            console.log('Query Successful. Number of products:', data?.length || 0);
+            if (data) {
+                setProducts(data);
+            }
         } catch (err) {
-            console.error('Error fetching inventory:', err);
+            console.error('Fatal Error in fetchData:', err);
         } finally {
             setLoading(false);
         }
@@ -71,13 +87,13 @@ export default function InventoryManager() {
 
     const uploadFile = async (file, path) => {
         const { data, error } = await supabase.storage
-            .from('products')
+            .from('product-covers')
             .upload(path, file, { upsert: true });
         
         if (error) throw error;
         
         const { data: { publicUrl } } = supabase.storage
-            .from('products')
+            .from('product-covers')
             .getPublicUrl(path);
             
         return publicUrl;
@@ -86,11 +102,6 @@ export default function InventoryManager() {
     const handleAddProduct = async (e) => {
         e.preventDefault();
         if (!user) return;
-        if (['pending', 'rejected', 'suspended'].includes(status)) {
-            alert(locale === 'ar' ? 'حسابك غير مفعل حالياً' : 'Votre compte n\'est pas activé');
-            return;
-        }
-
         setSubmitting(true);
         try {
             // Sequential Image Uploads
@@ -112,6 +123,7 @@ export default function InventoryManager() {
                 .insert({
                     ...formData,
                     ...urls,
+                    category_id: formData.category_id || categories[0]?.id,
                     seller_id: user.id,
                     status: 'active'
                 })
@@ -124,7 +136,7 @@ export default function InventoryManager() {
             
             // Reset
             setFormData({ 
-                name: '', price: '', stock_qty: '', 
+                name: '', price: '', stock_quantity: '', 
                 category_id: categories[0]?.id || '', 
                 description: '', cover_url: '', image_url_2: '', image_url_3: '',
                 is_active: true
@@ -168,33 +180,12 @@ export default function InventoryManager() {
                 <button 
                     className="btn-add-prod" 
                     onClick={() => setShowModal(true)}
-                    disabled={['pending', 'rejected', 'suspended'].includes(status)}
                 >
                     <FiPlus />
                     <span>{locale === 'ar' ? 'إضافة منتج' : 'Ajouter'}</span>
                 </button>
             </div>
 
-            {/* Constraint Message if not active */}
-            {['pending', 'rejected', 'suspended'].includes(status) && (
-                <div className="restriction-banner" style={{
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    color: '#ef4444',
-                    padding: '1rem',
-                    borderRadius: '12px',
-                    marginBottom: '2rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px'
-                }}>
-                    <FiAlertCircle />
-                    <span>
-                        {locale === 'ar' 
-                            ? 'لقد تم تقييد حسابك. لا يمكنك إضافة منتجات جديدة حتى يتم تفعيل الحساب.' 
-                            : 'Votre compte a été restreint. Vous ne pouvez pas ajouter de nouveaux produits.'}
-                    </span>
-                </div>
-            )}
 
             <div className="inventory-mgr__toolbar">
                 <div className="search-pill">
@@ -210,23 +201,56 @@ export default function InventoryManager() {
 
             <div className="inventory-mgr__grid">
                 {loading ? (
-                    [1,2,3].map(n => <div key={n} className="skeleton-card" />)
+                    [1,2,3,4,5,6].map(n => (
+                        <div key={n} className="skeleton-card">
+                            <div className="skeleton-box skeleton-img" />
+                            <div className="skeleton-content">
+                                <div className="skeleton-box skeleton-text skeleton-meta" />
+                                <div className="skeleton-box skeleton-text skeleton-title" />
+                                <div className="skeleton-actions">
+                                    <div className="skeleton-box skeleton-text skeleton-meta" />
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <div className="skeleton-box" style={{ width: '36px', height: '36px', borderRadius: '12px' }} />
+                                        <div className="skeleton-box" style={{ width: '36px', height: '36px', borderRadius: '12px' }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
                 ) : filteredProducts.length === 0 ? (
-                    <div className="empty-inventory">
-                        <FiBox size={60} />
+                    <div className="empty-inventory animate-fade">
+                        <div className="empty-inventory__icon">
+                            <FiBox size={80} />
+                        </div>
                         <h3>{locale === 'ar' ? 'المخزون فارغ' : 'Stock vide'}</h3>
-                        <p>ابدأ بإضافة أول منتج لك لتبدأ في البيع</p>
+                        <p>{locale === 'ar' ? 'ابدأ بإضافة أول منتج لك لتبدأ في البيع وزيادة أرباحك' : 'Commencez à ajouter vos produits pour booster vos ventes'}</p>
+                        
+                        <div className="empty-inventory__actions">
+                            <button 
+                                className="btn-add-prod" 
+                                onClick={() => setShowModal(true)}
+                            >
+                                <FiPlus /> {locale === 'ar' ? 'إضافة منتج' : 'Ajouter'}
+                            </button>
+                            <button 
+                                className="btn-tool-icon" 
+                                onClick={fetchData} 
+                                title={locale === 'ar' ? 'تحديث' : 'Actualiser'}
+                            >
+                                <FiRefreshCw />
+                            </button>
+                        </div>
                     </div>
                 ) : filteredProducts.map((prod) => (
                     <div key={prod.id} className="inv-card animate-up">
                         <div className="inv-card__img">
                             {prod.cover_url ? (
-                                <img src={prod.cover_url} alt={prod.name} />
+                                <img src={prod.cover_url.startsWith('http') ? prod.cover_url : supabase.storage.from('product-covers').getPublicUrl(prod.cover_url).data.publicUrl} alt={prod.name} />
                             ) : (
                                 <span className="placeholder-icon">📚</span>
                             )}
-                            <span className={`stock-tag ${prod.stock_qty <= 5 ? 'stock-tag--low' : ''}`}>
-                                {prod.stock_qty}
+                            <span className={`stock-tag ${prod.stock_quantity <= 5 ? 'stock-tag--low' : ''}`}>
+                                {prod.stock_quantity}
                             </span>
                         </div>
                         <div className="inv-card__body">
@@ -257,51 +281,67 @@ export default function InventoryManager() {
                         <form className="modal-form" onSubmit={handleAddProduct}>
                             <div className="form-group">
                                 <label>{locale === 'ar' ? 'اسم المنتج' : 'Nom'}</label>
-                                <input 
-                                    required
-                                    value={formData.name}
-                                    onChange={e => setFormData({...formData, name: e.target.value})}
-                                    placeholder="مثلاً: كتاب العلوم الطبيعية"
-                                />
+                                <div className="input-with-icon">
+                                    <FiTag className="input-icon" />
+                                    <input 
+                                        required
+                                        value={formData.name}
+                                        onChange={e => setFormData({...formData, name: e.target.value})}
+                                        placeholder={locale === 'ar' ? "مثلاً: كتاب العلوم الطبيعية" : "Ex: Livre de Sciences"}
+                                    />
+                                </div>
                             </div>
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{locale === 'ar' ? 'السعر (دج)' : 'Prix'}</label>
-                                    <input 
-                                        type="number" required
-                                        value={formData.price}
-                                        onChange={e => setFormData({...formData, price: e.target.value})}
-                                    />
+                                    <div className="input-with-icon">
+                                        <FiDollarSign className="input-icon" />
+                                        <input 
+                                            type="number" required
+                                            value={formData.price}
+                                            onChange={e => setFormData({...formData, price: e.target.value})}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>{locale === 'ar' ? 'الكمية' : 'Stock'}</label>
-                                    <input 
-                                        type="number" required
-                                        value={formData.stock_qty}
-                                        onChange={e => setFormData({...formData, stock_qty: e.target.value})}
-                                    />
+                                    <div className="input-with-icon">
+                                        <FiBox className="input-icon" />
+                                        <input 
+                                            type="number" required
+                                            value={formData.stock_quantity}
+                                            onChange={e => setFormData({...formData, stock_quantity: e.target.value})}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <label>{locale === 'ar' ? 'التصنيف' : 'Catégorie'}</label>
-                                <select 
-                                    value={formData.category_id}
-                                    onChange={e => setFormData({...formData, category_id: e.target.value})}
-                                >
-                                    {categories.map(cat => (
-                                        <option key={cat.id} value={cat.id}>
-                                            {locale === 'ar' ? cat.name_ar : cat.name_fr}
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="input-with-icon">
+                                    <FiFilter className="input-icon" />
+                                    <select 
+                                        value={formData.category_id}
+                                        onChange={e => setFormData({...formData, category_id: e.target.value})}
+                                    >
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.id}>
+                                                {locale === 'ar' ? cat.name_ar : cat.name_fr}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                             <div className="form-group">
                                 <label>{locale === 'ar' ? 'الوصف' : 'Description'}</label>
-                                <textarea 
-                                    rows="3"
-                                    value={formData.description}
-                                    onChange={e => setFormData({...formData, description: e.target.value})}
-                                />
+                                <div className="input-with-icon textarea-icon">
+                                    <FiFileText className="input-icon" />
+                                    <textarea 
+                                        rows="3"
+                                        value={formData.description}
+                                        onChange={e => setFormData({...formData, description: e.target.value})}
+                                        placeholder={locale === 'ar' ? "أضف وصفاً مختصراً للمنتج..." : "Ajoutez une courte description..."}
+                                    />
+                                </div>
                             </div>
 
                             <div className="image-uploads">

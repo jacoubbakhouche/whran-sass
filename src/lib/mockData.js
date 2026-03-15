@@ -106,7 +106,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Programmation', 'Design Graphique', 'Langues Vivantes'],
     },
     {
-        id: 2,
+        id: 'mock-inst-3',
         name_ar: 'جامعة هواري بومدين للعلوم والتكنولوجيا',
         name_fr: 'USTHB - Université des Sciences et de la Technologie Houari Boumédiène',
         type_id: 5,
@@ -132,7 +132,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Informatique', 'Mathématiques', 'Physique', 'Chimie', 'Biologie', 'Géologie'],
     },
     {
-        id: 3,
+        id: 'mock-inst-4',
         name_ar: 'ثانوية الأمير عبد القادر',
         name_fr: 'Lycée Emir Abdelkader',
         type_id: 4,
@@ -158,7 +158,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Sciences Expérimentales', 'Mathématiques', 'Technique Mathématiques', 'Lettres et Philosophie', 'Langues Étrangères'],
     },
     {
-        id: 4,
+        id: 'mock-inst-5',
         name_ar: 'متوسطة حسيبة بن بوعلي',
         name_fr: 'CEM Hassiba Ben Bouali',
         type_id: 3,
@@ -184,7 +184,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: [],
     },
     {
-        id: 5,
+        id: 'mock-inst-6',
         name_ar: 'مدرسة النجاح الابتدائية',
         name_fr: 'École Primaire En-Najah',
         type_id: 2,
@@ -210,7 +210,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: [],
     },
     {
-        id: 6,
+        id: 'mock-inst-7',
         name_ar: 'المعهد الوطني للتكوين المهني',
         name_fr: 'INSFP - Institut National Spécialisé de Formation Professionnelle',
         type_id: 6,
@@ -236,7 +236,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Informatique', 'Électronique', 'Comptabilité', 'Secrétariat'],
     },
     {
-        id: 7,
+        id: 'mock-inst-8',
         name_ar: 'روضة الأمل',
         name_fr: 'Crèche El-Amel',
         type_id: 1,
@@ -262,7 +262,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Éducation Préscolaire', 'Jeux Éducatifs', 'Mémorisation du Coran'],
     },
     {
-        id: 8,
+        id: 'mock-inst-9',
         name_ar: 'جامعة سطيف 1 - فرحات عباس',
         name_fr: 'Université Sétif 1 - Ferhat Abbas',
         type_id: 5,
@@ -288,7 +288,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Médecine', 'Pharmacie', 'Génie Civil', 'Informatique', 'Biologie'],
     },
     {
-        id: 9,
+        id: 'mock-inst-10',
         name_ar: 'مدرسة الريادة الخاصة',
         name_fr: 'École Privée El-Riyada',
         type_id: 7,
@@ -314,7 +314,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Primaire', 'Moyen', 'Programme International'],
     },
     {
-        id: 10,
+        id: 'mock-inst-11',
         name_ar: 'جامعة وهران 1 - أحمد بن بلة',
         name_fr: 'Université Oran 1 - Ahmed Ben Bella',
         type_id: 5,
@@ -340,7 +340,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Médecine', 'Droit', 'Sciences Économiques', 'Langues', 'Physique'],
     },
     {
-        id: 11,
+        id: 'mock-inst-12',
         name_ar: 'مدرسة ابن خلدون القرآنية',
         name_fr: 'École Coranique Ibn Khaldoun',
         type_id: 8,
@@ -366,7 +366,7 @@ export const MOCK_INSTITUTIONS = [
         programs_fr: ['Mémorisation du Coran', 'Sciences Islamiques', 'Langue Arabe'],
     },
     {
-        id: 12,
+        id: 'mock-inst-13',
         name_ar: 'ثانوية العقيد لطفي - باتنة',
         name_fr: 'Lycée Colonel Lotfi - Batna',
         type_id: 4,
