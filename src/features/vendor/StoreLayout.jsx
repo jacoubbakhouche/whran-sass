@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import { FiShoppingBag, FiPackage, FiMessageCircle, FiTrendingUp, FiLogOut, FiMenu, FiX, FiPlusCircle, FiUser } from 'react-icons/fi';
+import { FiShoppingBag, FiPackage, FiMessageCircle, FiTrendingUp, FiLogOut, FiMenu, FiX, FiPlusCircle, FiUser, FiMessageSquare, FiStar } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import './StoreLayout.css';
 
