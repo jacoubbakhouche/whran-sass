@@ -114,8 +114,15 @@ export default function ProductDetail() {
                                 ))}
                             </div>
                         )}
+                    <div className="rating-row">
+                        <div className="star-rating">
+                            {[1, 2, 3, 4, 5].map(star => (
+                                <FiStar key={star} size={18} fill="#FFD700" color="#FFD700" />
+                            ))}
+                        </div>
                     </div>
-                    <div className="price-tag">{book.discount_price || book.price} دج</div>
+                </div>
+                <div className="price-tag">{book.discount_price || book.price} دج</div>
                 </div>
 
                 {/* Vendor Section */}
@@ -191,7 +198,10 @@ export default function ProductDetail() {
                             }
                         }}
                     >
-                        إضافة إلى السلة (Add to Cart)
+                        شراء الآن
+                    </button>
+                    <button className="btn-contact-seller">
+                        تواصل مع البائع
                     </button>
                 </div>
             </div>
