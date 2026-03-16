@@ -23,6 +23,7 @@ export default function InstitutionOverview() {
     const [counts, setCounts] = useState({
         announcements: 0,
         reviews: 0,
+        messages: 0,
         followers: 0
     });
 
@@ -31,14 +32,16 @@ export default function InstitutionOverview() {
             if (!institution) return;
 
             // Fetch live counts
-            const [annRes, revRes] = await Promise.all([
+            const [annRes, revRes, msgRes] = await Promise.all([
                 supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
-                supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id)
+                supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
+                supabase.from('institution_messages').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id)
             ]);
 
             setCounts({
                 announcements: annRes.count || 0,
                 reviews: revRes.count || 0,
+                messages: msgRes.count || 0,
                 followers: 0 // Placeholder until we have followers table
             });
         };
@@ -48,8 +51,8 @@ export default function InstitutionOverview() {
     const cards = [
         { icon: <FiEye />, label: locale === 'ar' ? 'زيارات الملف' : 'Vues Profil', value: institution?.views_count || '0', change: '+0', color: '#3B82F6' },
         { icon: <FiStar />, label: locale === 'ar' ? 'التقييم العام' : 'Note Globale', value: institution?.avg_rating || '0.0', change: `${counts.reviews} ريفيو`, color: '#F59E0B' },
-        { icon: <FiBell />, label: locale === 'ar' ? 'إعلانات نشطة' : 'Annonces', value: counts.announcements, change: 'تحديث مباشر', color: '#10B981' },
-        { icon: <FiUsers />, label: locale === 'ar' ? 'طلبات تواصل' : 'Inquiries', value: '0', change: '+0 اليوم', color: '#EC4899' },
+        { icon: <FiBell />, label: locale === 'ar' ? 'إعلانات نشطة' : 'Annonces', value: counts.announcements, change: locale === 'ar' ? 'تحديث مباشر' : 'Live update', color: '#10B981' },
+        { icon: <FiUsers />, label: locale === 'ar' ? 'الرسائل والمراسلات' : 'Messages', value: counts.messages, change: locale === 'ar' ? `+${counts.messages} إجمالي` : `+${counts.messages} total`, color: '#EC4899' },
     ];
 
 

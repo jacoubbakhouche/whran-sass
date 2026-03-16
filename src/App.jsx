@@ -19,6 +19,8 @@ import UserAuth from './features/auth/UserAuth';
 import InstitutionLayout from './features/institution/dashboard/InstitutionLayout';
 import InstitutionOverview from './features/institution/dashboard/InstitutionOverview';
 import InstitutionProfileEditor from './features/institution/dashboard/InstitutionProfileEditor';
+import InstitutionMessages from './features/institution/dashboard/InstitutionMessages';
+import InstitutionAnalytics from './features/institution/dashboard/InstitutionAnalytics';
 import AnnouncementManager from './features/institution/dashboard/AnnouncementManager';
 import InventoryManager from './features/vendor/InventoryManager';
 import OrderManager from './features/vendor/OrderManager';
@@ -108,16 +110,8 @@ function AppContent() {
             <Route index element={<InstitutionOverview />} />
             <Route path="profile" element={<InstitutionProfileEditor />} />
             <Route path="announcements" element={<AnnouncementManager />} />
-            <Route path="messages" element={
-              <div style={{ textAlign: 'center', padding: '100px 20px', color: '#fff' }}>
-                <h2>💬 مركز الرسائل</h2><p style={{ opacity: 0.5 }}>قريباً</p>
-              </div>
-            } />
-            <Route path="analytics" element={
-              <div style={{ textAlign: 'center', padding: '100px 20px', color: '#fff' }}>
-                <h2>📊 الإحصائيات</h2><p style={{ opacity: 0.5 }}>قريباً</p>
-              </div>
-            } />
+            <Route path="messages" element={<InstitutionMessages />} />
+            <Route path="analytics" element={<InstitutionAnalytics />} />
           </Route>
         </Route>
       </Route>
