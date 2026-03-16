@@ -115,7 +115,7 @@
 
 .dot.active {
   width: 20px;
-  background: hsl(239, 84%, 67%);
+  background: var(--primary);
   border-radius: 4px;
 }
 
