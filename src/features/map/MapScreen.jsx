@@ -118,12 +118,13 @@ export default function MapScreen() {
       const normalizedStores = (stores || []).map(s => ({
         ...s,
         name: s.store_name || s.full_name,
-        lat: s.lat,
-        lng: s.lng,
+        name_ar: s.store_name || s.full_name, // Copy to name_ar for filtering
+        lat: typeof s.lat === 'string' ? parseFloat(s.lat) : s.lat,
+        lng: typeof s.lng === 'string' ? parseFloat(s.lng) : s.lng,
         type: 'متجر',
         logo: s.avatar_url,
         bucket: 'profiles'
-      }));
+      })).filter(s => s.lat && s.lng); // Only show stores with coordinates
 
       setInstitutions([...normalizedInsts, ...normalizedStores]);
     };
@@ -132,7 +133,9 @@ export default function MapScreen() {
   }, []);
 
   const filtered = institutions.filter(inst => {
-    const matchSearch = !searchText || inst.name_ar?.toLowerCase().includes(searchText.toLowerCase());
+    const matchSearch = !searchText || 
+                       (inst.name_ar?.toLowerCase().includes(searchText.toLowerCase())) ||
+                       (inst.name?.toLowerCase().includes(searchText.toLowerCase()));
     const matchType   = typeMatches(inst.type, typeFilter);
     return matchSearch && matchType;
   });

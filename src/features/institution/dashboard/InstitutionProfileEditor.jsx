@@ -60,6 +60,7 @@ export default function InstitutionProfileEditor() {
                 console.error('Geolocation error:', error);
                 let msg = locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation';
                 if (error.code === 1) msg = locale === 'ar' ? 'يرجى السماح للمتصفح بالوصول إلى موقعك' : 'Veuillez autoriser l\'accès à votre position';
+                else if (error.code === 2) msg = locale === 'ar' ? 'الموقع غير متاح حالياً، تأكد من تفعيل الـ GPS في جهازك' : 'Position non disponible, vérifiez votre GPS';
                 else if (error.code === 3) msg = locale === 'ar' ? 'انتهت مهلة تحديد الموقع، حاول مجدداً' : 'Délai d’attente dépassé, réessayez';
                 
                 alert(msg);
