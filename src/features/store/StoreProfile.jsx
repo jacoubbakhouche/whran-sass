@@ -252,9 +252,6 @@ export default function StoreProfile() {
                     </div>
                 )}
 
-                    </div>
-                )}
-
                 {/* Reviews Section */}
                 <div className="store-reviews-section">
                     <h2 className="section-title">
