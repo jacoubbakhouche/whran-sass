@@ -47,6 +47,12 @@ export default function InstitutionProfileEditor() {
         }
 
         setGeolocating(true);
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 0
+        };
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setFormData(prev => ({
@@ -63,10 +69,28 @@ export default function InstitutionProfileEditor() {
                 else if (error.code === 2) msg = locale === 'ar' ? 'الموقع غير متاح حالياً، تأكد من تفعيل الـ GPS في جهازك' : 'Position non disponible, vérifiez votre GPS';
                 else if (error.code === 3) msg = locale === 'ar' ? 'انتهت مهلة تحديد الموقع، حاول مجدداً' : 'Délai d’attente dépassé, réessayez';
                 
-                alert(msg);
-                setGeolocating(false);
+                if (options.enableHighAccuracy) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            setFormData(prev => ({
+                                ...prev,
+                                lat: pos.coords.latitude.toFixed(6),
+                                lng: pos.coords.longitude.toFixed(6)
+                            }));
+                            setGeolocating(false);
+                        },
+                        () => {
+                            alert(msg);
+                            setGeolocating(false);
+                        },
+                        { enableHighAccuracy: false, timeout: 5000 }
+                    );
+                } else {
+                    alert(msg);
+                    setGeolocating(false);
+                }
             },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+            options
         );
     };
 

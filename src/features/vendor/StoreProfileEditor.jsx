@@ -23,9 +23,9 @@ function MapUpdater({ center }) {
     const map = useMap();
     useEffect(() => {
         if (center[0] && center[1]) {
-            map.setView(center, map.getZoom());
+            map.flyTo(center, 15, { duration: 1.5 });
         }
-    }, [center, map]);
+    }, [center[0], center[1], map]);
     return null;
 }
 
@@ -100,12 +100,19 @@ export default function StoreProfileEditor() {
         }
 
         setGeolocating(true);
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 0
+        };
+
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                const { latitude, longitude } = position.coords;
                 setFormData(prev => ({
                     ...prev,
-                    lat: parseFloat(position.coords.latitude).toFixed(6),
-                    lng: parseFloat(position.coords.longitude).toFixed(6)
+                    lat: latitude.toFixed(6),
+                    lng: longitude.toFixed(6)
                 }));
                 setGeolocating(false);
             },
@@ -116,10 +123,30 @@ export default function StoreProfileEditor() {
                 else if (error.code === 2) msg = locale === 'ar' ? 'الموقع غير متاح حالياً، تأكد من تفعيل الـ GPS في جهازك' : 'Position non disponible, vérifiez votre GPS';
                 else if (error.code === 3) msg = locale === 'ar' ? 'انتهت مهلة تحديد الموقع، حاول مجدداً' : 'Délai d’attente dépassé, réessayez';
                 
-                alert(msg);
-                setGeolocating(false);
+                // Fallback for timeout or other errors: try again with low accuracy
+                if (options.enableHighAccuracy) {
+                    console.log('Retrying with low accuracy...');
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            setFormData(prev => ({
+                                ...prev,
+                                lat: pos.coords.latitude.toFixed(6),
+                                lng: pos.coords.longitude.toFixed(6)
+                            }));
+                            setGeolocating(false);
+                        },
+                        () => {
+                            alert(msg);
+                            setGeolocating(false);
+                        },
+                        { enableHighAccuracy: false, timeout: 5000 }
+                    );
+                } else {
+                    alert(msg);
+                    setGeolocating(false);
+                }
             },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+            options
         );
     };
 
