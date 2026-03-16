@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { supabase } from '../../lib/supabase';
@@ -25,6 +25,7 @@ const TYPE_COLORS = {
   'مركز تدريب':  '#E07A3A',
   'مركز لغات':   '#E07A3A',
   'تكوين مهني':  '#B7950B',
+  'متجر':        '#6366F1',
 };
 
 function getTypeColor(type) {
@@ -56,6 +57,7 @@ const INSTITUTION_TYPES = [
   { label: 'جامعات', value: 'university' },
   { label: 'تدريب / لغات', value: 'training' },
   { label: 'تكوين مهني', value: 'vocational' },
+  { label: 'متاجر', value: 'store' },
 ];
 
 function typeMatches(instType, filterValue) {
@@ -66,6 +68,7 @@ function typeMatches(instType, filterValue) {
     university:['جامعة', 'جامعة خاصة'],
     training:  ['مركز تدريب', 'مركز لغات'],
     vocational:['تكوين مهني'],
+    store:     ['متجر'],
   };
   return (m[filterValue] || []).some(k => instType?.includes(k));
 }
@@ -86,13 +89,46 @@ export default function MapScreen() {
   const [selected, setSelected]   = useState(null);
   const [userCoords, setUserCoords] = useState(null);
   const [sheetVisible, setSheetVisible] = useState(false);
+  const [route, setRoute] = useState(null);
 
   useEffect(() => {
-    supabase
-      .from('institutions')
-      .select('id, name_ar, type, location, rating_avg, rating_count, logo_url, wilaya, commune')
-      .eq('status', 'active')
-      .then(({ data }) => { if (data) setInstitutions(data); });
+    const fetchData = async () => {
+      // 1. Fetch institutions
+      const { data: insts } = await supabase
+        .from('institutions')
+        .select('id, name_ar, type, location, rating_avg, rating_count, logo_url, wilaya, commune')
+        .eq('status', 'active');
+
+      // 2. Fetch stores (vendors from profiles)
+      const { data: stores } = await supabase
+        .from('profiles')
+        .select('id, store_name, full_name, avatar_url, lat, lng, rating_avg, rating_count, wilaya, commune')
+        .eq('role', 'vendor');
+
+      const normalizedInsts = (insts || []).map(i => ({
+        ...i,
+        name: i.name_ar,
+        lat: i.location?.coordinates ? i.location.coordinates[1] : null,
+        lng: i.location?.coordinates ? i.location.coordinates[0] : null,
+        type: i.type,
+        logo: i.logo_url,
+        bucket: 'profiles'
+      }));
+
+      const normalizedStores = (stores || []).map(s => ({
+        ...s,
+        name: s.store_name || s.full_name,
+        lat: s.lat,
+        lng: s.lng,
+        type: 'متجر',
+        logo: s.avatar_url,
+        bucket: 'profiles'
+      }));
+
+      setInstitutions([...normalizedInsts, ...normalizedStores]);
+    };
+
+    fetchData();
   }, []);
 
   const filtered = institutions.filter(inst => {
@@ -104,7 +140,17 @@ export default function MapScreen() {
   const handleMarkerClick = useCallback((inst) => {
     setSelected(inst);
     setSheetVisible(true);
+    setRoute(null); // Clear previous route
   }, []);
+
+  const handleShowRoute = (dest) => {
+    if (!userCoords) {
+      alert('الرجاء تفعيل موقعك أولاً لرؤية المسار');
+      handleMyLocation();
+      return;
+    }
+    setRoute([userCoords, [dest.lat, dest.lng]]);
+  };
 
   const handleMyLocation = () => {
     navigator.geolocation?.getCurrentPosition(pos => {
@@ -112,8 +158,8 @@ export default function MapScreen() {
     });
   };
 
-  const logoUrl = selected?.logo_url
-    ? supabase.storage.from('institution-logos').getPublicUrl(selected.logo_url).data.publicUrl
+  const logoUrl = selected?.logo
+    ? supabase.storage.from(selected.bucket || 'profiles').getPublicUrl(selected.logo).data.publicUrl
     : null;
 
   return (
@@ -130,19 +176,23 @@ export default function MapScreen() {
           attribution='&copy; OpenStreetMap'
         />
         {userCoords && <FlyToLocation coords={userCoords} />}
+        {route && (
+          <L.Polyline 
+            positions={route} 
+            color="var(--primary)" 
+            weight={4} 
+            opacity={0.6} 
+            dashArray="10, 10" 
+            animate={true} 
+          />
+        )}
         {filtered.map(inst => {
-          let coords = null;
-          try {
-            if (inst.location?.coordinates) {
-              coords = [inst.location.coordinates[1], inst.location.coordinates[0]];
-            }
-          } catch (_) {}
-          if (!coords) return null;
+          if (!inst.lat || !inst.lng) return null;
           const color = getTypeColor(inst.type);
           return (
             <Marker
               key={inst.id}
-              position={coords}
+              position={[inst.lat, inst.lng]}
               icon={createColoredMarker(color)}
               eventHandlers={{ click: () => handleMarkerClick(inst) }}
             />
@@ -241,12 +291,7 @@ export default function MapScreen() {
                 <button
                   className="btn-outline btn-primary"
                   style={{ flex: 1 }}
-                  onClick={() => {
-                    try {
-                      const [lng, lat] = selected.location.coordinates;
-                      window.open(`https://maps.google.com?q=${lat},${lng}`, '_blank');
-                    } catch (_) {}
-                  }}
+                  onClick={() => handleShowRoute(selected)}
                 >
                   🧭 المسار
                 </button>

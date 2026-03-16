@@ -22,8 +22,12 @@ export default function StoreProfileEditor() {
         phone: '',
         wilaya: '',
         commune: '',
-        avatar_url: ''
+        avatar_url: '',
+        lat: '',
+        lng: ''
     });
+
+    const [geolocating, setGeolocating] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -48,11 +52,38 @@ export default function StoreProfileEditor() {
                 phone: data.phone || '',
                 wilaya: data.wilaya || '',
                 commune: data.commune || '',
-                avatar_url: data.avatar_url || ''
+                avatar_url: data.avatar_url || '',
+                lat: data.lat || '',
+                lng: data.lng || ''
             });
         } catch (err) {
             console.error('Error fetching profile:', err);
         }
+    };
+
+    const handleGetLocation = () => {
+        if (!navigator.geolocation) {
+            alert(locale === 'ar' ? 'المتصفح لا يدعم تحديد الموقع' : 'Géolocalisation non supportée');
+            return;
+        }
+
+        setGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setFormData(prev => ({
+                    ...prev,
+                    lat: position.coords.latitude.toFixed(6),
+                    lng: position.coords.longitude.toFixed(6)
+                }));
+                setGeolocating(false);
+            },
+            (error) => {
+                console.error('Geolocation error:', error);
+                alert(locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation');
+                setGeolocating(false);
+            },
+            { enableHighAccuracy: true }
+        );
     };
 
     const handleFileUpload = async (e) => {
@@ -102,6 +133,8 @@ export default function StoreProfileEditor() {
                     wilaya: formData.wilaya,
                     commune: formData.commune,
                     avatar_url: formData.avatar_url,
+                    lat: formData.lat ? parseFloat(formData.lat) : null,
+                    lng: formData.lng ? parseFloat(formData.lng) : null,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', user.id);
@@ -196,6 +229,38 @@ export default function StoreProfileEditor() {
                             onChange={(e) => setFormData({ ...formData, wilaya: e.target.value })} 
                             placeholder="..."
                         />
+                    </div>
+
+                    <div className="spe-input-group">
+                        <label>Latitude</label>
+                        <input 
+                            type="number" step="any"
+                            value={formData.lat} 
+                            onChange={(e) => setFormData({ ...formData, lat: e.target.value })} 
+                            placeholder="36.1234"
+                        />
+                    </div>
+
+                    <div className="spe-input-group">
+                        <label>Longitude</label>
+                        <input 
+                            type="number" step="any"
+                            value={formData.lng} 
+                            onChange={(e) => setFormData({ ...formData, lng: e.target.value })} 
+                            placeholder="3.1234"
+                        />
+                    </div>
+
+                    <div className="spe-input-group spe-location-action">
+                        <button 
+                            type="button" 
+                            className="btn-text-icon" 
+                            onClick={handleGetLocation}
+                            disabled={geolocating}
+                        >
+                            <FiMapPin />
+                            {geolocating ? (locale === 'ar' ? 'جاري التحديد...' : 'Localisation...') : (locale === 'ar' ? 'تحديد موقعي الحالي (GPS)' : 'Ma position actuelle')}
+                        </button>
                     </div>
                 </div>
 

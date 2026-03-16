@@ -206,3 +206,40 @@
         text-align: center;
     }
 }
+
+/* Location Selector Styles */
+.spe-location-action {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+}
+
+.btn-text-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-main);
+    border: 2px dashed var(--border);
+    padding: 14px 24px;
+    border-radius: 16px;
+    color: var(--primary);
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-text-icon:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: var(--primary);
+}
+
+.btn-text-icon:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spe-input-group input[type="number"] {
+    font-family: var(--font-latin);
+}
