@@ -36,6 +36,7 @@ import AccountStatusScreen from './features/auth/AccountStatusScreen';
 import WelcomeScreen from './features/onboarding/WelcomeScreen';
 import UserTypeScreen from './features/onboarding/UserTypeScreen';
 import CartScreen from './features/store/CartScreen';
+import AIChat from './features/ai/AIChat';
 
 function UserLayout({ children }) {
   return (
@@ -173,6 +174,7 @@ export default function App() {
             <div dir="rtl">
               <AppContent />
               <NavWrapper />
+              <AIChat />
             </div>
           </BrowserRouter>
         </I18nProvider>

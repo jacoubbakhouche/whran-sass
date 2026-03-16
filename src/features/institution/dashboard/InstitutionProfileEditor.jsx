@@ -217,7 +217,7 @@ export default function InstitutionProfileEditor() {
 
             const { error: instError } = await supabase
                 .from('institutions')
-                .upsert(instData, { onConflict: 'owner_id' });
+                .upsert(instData);
             
             if (instError) throw instError;
 

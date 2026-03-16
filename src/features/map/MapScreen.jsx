@@ -97,7 +97,7 @@ export default function MapScreen() {
       // 1. Fetch institutions
       const { data: insts } = await supabase
         .from('institutions')
-        .select('id, name_ar, type, location, rating_avg, rating_count, logo_url, wilaya, commune')
+        .select('id, name_ar, type, lat, lng, rating_avg, rating_count, logo_url, wilaya, commune')
         .eq('status', 'active');
 
       // 2. Fetch stores (vendors from profiles)
@@ -109,8 +109,8 @@ export default function MapScreen() {
       const normalizedInsts = (insts || []).map(i => ({
         ...i,
         name: i.name_ar,
-        lat: i.location?.coordinates ? i.location.coordinates[1] : null,
-        lng: i.location?.coordinates ? i.location.coordinates[0] : null,
+        lat: typeof i.lat === 'string' ? parseFloat(i.lat) : i.lat,
+        lng: typeof i.lng === 'string' ? parseFloat(i.lng) : i.lng,
         type: i.type,
         logo: i.logo_url,
         bucket: 'profiles',
@@ -169,7 +169,9 @@ export default function MapScreen() {
   };
 
   const logoUrl = selected?.logo
-    ? supabase.storage.from(selected.bucket || 'profiles').getPublicUrl(selected.logo).data.publicUrl
+    ? (selected.logo.startsWith('http') 
+        ? selected.logo 
+        : supabase.storage.from(selected.bucket || 'profiles').getPublicUrl(selected.logo).data.publicUrl)
     : null;
 
   return (
