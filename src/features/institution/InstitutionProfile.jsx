@@ -29,6 +29,9 @@ export default function InstitutionProfile() {
     const [institution, setInstitution] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [messageContent, setMessageContent] = useState('');
+    const [sendingMessage, setSendingMessage] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -75,6 +78,39 @@ export default function InstitutionProfile() {
             </div>
         );
     }
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            alert(locale === 'ar' ? 'يجب عليك تسجيل الدخول لإرسال رسالة' : 'Vous devez être connecté pour envoyer un message');
+            return;
+        }
+
+        setSendingMessage(true);
+        try {
+            const { error } = await supabase
+                .from('institution_messages')
+                .insert([{
+                    institution_id: institution.id,
+                    sender_id: user.id,
+                    sender_name: user.user_metadata?.full_name || user.email,
+                    sender_avatar: user.user_metadata?.avatar_url,
+                    subject: locale === 'ar' ? 'استفسار من الملف الشخصي' : 'Demande via profil',
+                    content: messageContent
+                }]);
+
+            if (error) throw error;
+
+            alert(locale === 'ar' ? 'تم إرسال الرسالة بنجاح' : 'Message envoyé avec succès');
+            setIsMessageModalOpen(false);
+            setMessageContent('');
+        } catch (err) {
+            console.error('Error sending message:', err);
+            alert(locale === 'ar' ? 'حدث خطأ أثناء إرسال الرسالة' : 'Erreur lors de l\'envoi du message');
+        } finally {
+            setSendingMessage(false);
+        }
+    };
 
     if (!institution) {
         return (
@@ -329,12 +365,50 @@ export default function InstitutionProfile() {
                 </div>
             )}
 
+            {/* Message Modal */}
+            {isMessageModalOpen && (
+                <div className="ann-modal-overlay" onClick={() => setIsMessageModalOpen(false)}>
+                    <div className="ann-details-modal glass animate-up" onClick={e => e.stopPropagation()}>
+                        <div className="ann-details-modal__header">
+                            <h3>{locale === 'ar' ? 'إرسال رسالة' : 'Envoyer un message'}</h3>
+                            <button className="close-btn" onClick={() => setIsMessageModalOpen(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="ann-details-modal__body">
+                            <form onSubmit={handleSendMessage}>
+                                <textarea 
+                                    className="message-textarea"
+                                    placeholder={locale === 'ar' ? 'اكتب رسالتك هنا...' : 'Écrivez votre message ici...'}
+                                    value={messageContent}
+                                    onChange={(e) => setMessageContent(e.target.value)}
+                                    required
+                                    rows={6}
+                                />
+                                <button type="submit" className="btn-pill btn-primary w-full mt-4" disabled={sendingMessage}>
+                                    {sendingMessage ? '...' : (locale === 'ar' ? 'إرسال الآن' : 'Envoyer maintenant')}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Bottom Sticky Action */}
             <div className="profile-sticky-action">
-                <button className="btn-pill btn-primary w-full shadow-lg">
-                    <FiPhone size={18} />
-                    {locale === 'ar' ? 'اتصل الآن' : 'Appeler maintenant'}
-                </button>
+                <div className="sticky-action-container">
+                    <button 
+                        className="btn-pill btn-outline-primary shadow-lg"
+                        style={{ padding: '12px 20px', minWidth: '60px' }}
+                        onClick={() => setIsMessageModalOpen(true)}
+                    >
+                        <FiMessageSquare size={20} />
+                    </button>
+                    <button className="btn-pill btn-primary shadow-lg flex-grow">
+                        <FiPhone size={18} />
+                        <span>{locale === 'ar' ? 'اتصل الآن' : 'Appeler'}</span>
+                    </button>
+                </div>
             </div>
         </div>
     );

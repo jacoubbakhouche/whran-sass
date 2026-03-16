@@ -492,6 +492,44 @@
     white-space: pre-wrap;
 }
 
+.sticky-action-container {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.btn-pill.btn-outline-primary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    padding: 12px 24px;
+}
+
+.message-textarea {
+    width: 100%;
+    padding: var(--space-4);
+    border-radius: 16px;
+    border: 2px solid #F1F5F9;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+    background: #F8FAFC;
+    resize: none;
+}
+
+.message-textarea:focus {
+    border-color: var(--primary);
+    background: white;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
 /* ─── Animations ─── */
 @keyframes fadeIn {
     from { opacity: 0; }

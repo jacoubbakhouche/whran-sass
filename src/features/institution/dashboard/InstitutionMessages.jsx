@@ -135,14 +135,19 @@ export default function InstitutionMessages() {
 
                     <div className="message-list">
                         {loading ? (
-                            <div className="empty-state"><p>{locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}</p></div>
+                            <div className="loading-dots">
+                                <span></span><span></span><span></span>
+                            </div>
                         ) : filteredMessages.map(msg => (
                             <div 
                                 key={msg.id} 
                                 className={`message-item ${selectedMessage?.id === msg.id ? 'selected' : ''} ${!msg.is_read ? 'unread' : ''}`}
                                 onClick={() => handleSelectMessage(msg)}
                             >
-                                <img src={msg.sender_avatar || `https://ui-avatars.com/api/?name=${msg.sender_name}&background=random`} alt={msg.sender_name} className="avatar" />
+                                <div className="avatar-container">
+                                    <img src={msg.sender_avatar || `https://ui-avatars.com/api/?name=${msg.sender_name}&background=random`} alt={msg.sender_name} className="avatar" />
+                                    {!msg.is_read && <span className="unread-dot"></span>}
+                                </div>
                                 <div className="message-info">
                                     <div className="message-info-top">
                                         <h4>{msg.sender_name}</h4>
@@ -155,6 +160,7 @@ export default function InstitutionMessages() {
                         ))}
                         {!loading && filteredMessages.length === 0 && (
                             <div className="empty-state">
+                                <FiMessageSquare size={32} />
                                 <p>{locale === 'ar' ? 'لا توجد رسائل' : 'Aucun message'}</p>
                             </div>
                         )}
@@ -162,12 +168,15 @@ export default function InstitutionMessages() {
                 </div>
 
                 {/* Message Viewer */}
-                <div className="message-viewer">
+                <div className={`message-viewer ${selectedMessage ? 'viewer--open' : ''}`}>
                     {selectedMessage ? (
                         <>
                             <div className="viewer-header">
+                                <button className="back-btn" onClick={() => setSelectedMessage(null)}>
+                                    <FiSend style={{ transform: locale === 'ar' ? 'rotate(180deg)' : 'none' }} />
+                                </button>
                                 <img src={selectedMessage.sender_avatar || `https://ui-avatars.com/api/?name=${selectedMessage.sender_name}&background=random`} alt={selectedMessage.sender_name} className="avatar-large" />
-                                <div>
+                                <div className="viewer-meta">
                                     <h3>{selectedMessage.sender_name}</h3>
                                     <p>{selectedMessage.subject}</p>
                                 </div>
@@ -177,34 +186,45 @@ export default function InstitutionMessages() {
                                     <p>{selectedMessage.content}</p>
                                     <span className="bubble-time">{new Date(selectedMessage.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
+                                {messages.filter(m => m.reply_to === selectedMessage.id).map(reply => (
+                                    <div key={reply.id} className="message-bubble sent">
+                                        <p>{reply.content}</p>
+                                        <span className="bubble-time">{new Date(reply.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                ))}
                             </div>
                             <div className="viewer-footer">
-                                <div className="reply-box">
-                                    <input 
-                                        type="text" 
-                                        placeholder={locale === 'ar' ? 'اكتب ردك هنا...' : 'Écrivez votre réponse...'} 
-                                        value={replyText}
-                                        onChange={(e) => setReplyText(e.target.value)}
-                                        onKeyPress={(e) => e.key === 'Enter' && handleSendReply()}
-                                        disabled={sending}
-                                    />
-                                    <button 
-                                        className="btn-send" 
-                                        onClick={handleSendReply}
-                                        disabled={sending || !replyText.trim()}
-                                    >
-                                        <FiSend />
-                                    </button>
+                                <div className="reply-box-wrapper">
+                                    <div className="reply-box">
+                                        <textarea 
+                                            placeholder={locale === 'ar' ? 'اكتب ردك هنا...' : 'Répondre...'} 
+                                            value={replyText}
+                                            onChange={(e) => setReplyText(e.target.value)}
+                                            disabled={sending}
+                                            rows={1}
+                                            onInput={(e) => {
+                                                e.target.style.height = 'auto';
+                                                e.target.style.height = e.target.scrollHeight + 'px';
+                                            }}
+                                        />
+                                        <button 
+                                            className="btn-send" 
+                                            onClick={handleSendReply}
+                                            disabled={sending || !replyText.trim()}
+                                        >
+                                            <FiSend />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </>
                     ) : (
                         <div className="no-message-selected">
-                            <div className="icon-wrapper">
+                            <div className="icon-wrapper glass">
                                 <FiMessageSquare />
                             </div>
-                            <h3>{locale === 'ar' ? 'لم يتم تحديد رسالة' : 'Aucun message sélectionné'}</h3>
-                            <p>{locale === 'ar' ? 'اختر رسالة من القائمة لعرضها' : 'Sélectionnez un message dans la liste pour le voir'}</p>
+                            <h3>{locale === 'ar' ? 'مركز المراسلة' : 'Messagerie'}</h3>
+                            <p>{locale === 'ar' ? 'اختر أي محادثة للبدء' : 'Sélectionnez une conversation'}</p>
                         </div>
                     )}
                 </div>
