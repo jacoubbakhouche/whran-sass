@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { FiCamera, FiSave, FiUser, FiInfo, FiMapPin, FiPhone } from 'react-icons/fi';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -26,6 +26,15 @@ function MapUpdater({ center }) {
             map.setView(center, map.getZoom());
         }
     }, [center, map]);
+    return null;
+}
+
+function LocationPicker({ onLocationSelected }) {
+    useMapEvents({
+        click(e) {
+            onLocationSelected(e.latlng);
+        },
+    });
     return null;
 }
 
@@ -304,6 +313,15 @@ export default function StoreProfileEditor() {
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                     attribution='&copy; OpenStreetMap'
                                 />
+                                <LocationPicker 
+                                    onLocationSelected={(latlng) => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            lat: latlng.lat.toFixed(6),
+                                            lng: latlng.lng.toFixed(6)
+                                        }));
+                                    }} 
+                                />
                                 {formData.lat && formData.lng && (
                                     <>
                                         <Marker position={[parseFloat(formData.lat), parseFloat(formData.lng)]} />
@@ -312,9 +330,12 @@ export default function StoreProfileEditor() {
                                 )}
                             </MapContainer>
                             {(!formData.lat || !formData.lng) && (
-                                <div className="map-overlay-hint">
+                                <div className="map-overlay-hint clickable" onClick={() => {
+                                    // Make hint disappear when clicked to allow picking
+                                    // but pick should be handled by map click
+                                }}>
                                     <FiMapPin size={24} />
-                                    <p>{locale === 'ar' ? 'قم بتحديد الموقع ليظهر على الخريطة' : 'Localisez pour afficher sur la carte'}</p>
+                                    <p>{locale === 'ar' ? 'اضغط على الخريطة لتحديد الموقع يدوياً' : 'Cliquez sur la carte pour définir la position'}</p>
                                 </div>
                             )}
                         </div>
