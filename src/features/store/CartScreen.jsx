@@ -99,7 +99,7 @@ export default function CartScreen() {
                 
                 // Notify Seller (Mock logic for now - inserting into notifications table)
                 await supabase.from('notifications').insert({
-                    user_id: item.products.vendor_id,
+                    user_id: item.products.seller_id,
                     type: 'new_order',
                     title: 'طلب جديد! 📦',
                     message: `لقد وصلك طلب جديد للمنتج: ${item.products.name}`
