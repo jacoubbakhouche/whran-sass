@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { FiCamera, FiSave, FiUser, FiInfo, FiMapPin, FiPhone } from 'react-icons/fi';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import './StoreProfileEditor.css';
 
 // Fix Leaflet icon issue
