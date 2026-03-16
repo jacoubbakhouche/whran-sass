@@ -163,10 +163,10 @@
 }
 
 .filter-tab.active {
-  background: #333;
+  background: #7C3AED;
   color: #fff;
-  border-color: #333;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #7C3AED;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
 /* --- Book Card Premium --- */
@@ -264,7 +264,7 @@
 .add-mini-btn {
   width: 32px;
   height: 32px;
-  background: #333;
+  background: #7C3AED;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -274,6 +274,12 @@
   font-size: 1.2rem;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-mini-btn:hover {
+  background: #6D28D9;
+  transform: scale(1.1);
 }
 
 /* Compact Layout */
