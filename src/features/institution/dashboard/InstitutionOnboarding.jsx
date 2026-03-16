@@ -22,7 +22,36 @@ export default function InstitutionOnboarding({ onComplete }) {
         address_detail: '',
         phone: '',
         description: '',
+        lat: '',
+        lng: '',
     });
+
+    const [geolocating, setGeolocating] = useState(false);
+
+    const handleGetLocation = () => {
+        if (!navigator.geolocation) {
+            alert(locale === 'ar' ? 'المتصفح لا يدعم تحديد الموقع' : 'Géolocalisation non supportée');
+            return;
+        }
+
+        setGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setFormData(prev => ({
+                    ...prev,
+                    lat: position.coords.latitude.toFixed(6),
+                    lng: position.coords.longitude.toFixed(6)
+                }));
+                setGeolocating(false);
+            },
+            (error) => {
+                console.error('Geolocation error:', error);
+                alert(locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation');
+                setGeolocating(false);
+            },
+            { enableHighAccuracy: true }
+        );
+    };
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
@@ -41,6 +70,8 @@ export default function InstitutionOnboarding({ onComplete }) {
                     address_detail: formData.address_detail,
                     phone: formData.phone,
                     description: formData.description,
+                    lat: formData.lat ? parseFloat(formData.lat) : null,
+                    lng: formData.lng ? parseFloat(formData.lng) : null,
                     status: 'active' // Instant activation
                 }, { onConflict: 'owner_id' })
                 .select()
@@ -131,6 +162,26 @@ export default function InstitutionOnboarding({ onComplete }) {
                                 <div className="form-group">
                                     <label><FiMapPin /> {locale === 'ar' ? 'البلدية' : 'Commune'}</label>
                                     <input type="text" value={formData.commune} onChange={e => setFormData({...formData, commune: e.target.value})} placeholder="..." required />
+                                </div>
+                                <div className="form-group">
+                                    <label><FiMapPin /> {locale === 'ar' ? 'خط العرض (Latitude)' : 'Latitude'}</label>
+                                    <input type="number" step="any" value={formData.lat} onChange={e => setFormData({...formData, lat: e.target.value})} placeholder="36.1234" />
+                                </div>
+                                <div className="form-group">
+                                    <label><FiMapPin /> {locale === 'ar' ? 'خط الطول (Longitude)' : 'Longitude'}</label>
+                                    <input type="number" step="any" value={formData.lng} onChange={e => setFormData({...formData, lng: e.target.value})} placeholder="3.1234" />
+                                </div>
+                                <div className="form-group full-width" style={{ marginTop: '-10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-text-icon" 
+                                        onClick={handleGetLocation}
+                                        disabled={geolocating}
+                                        style={{ fontSize: '0.9rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 0' }}
+                                    >
+                                        <FiMapPin />
+                                        {geolocating ? (locale === 'ar' ? 'جاري التحديد...' : 'Localisation...') : (locale === 'ar' ? 'تحديد موقعي الحالي (GPS)' : 'Ma position actuelle')}
+                                    </button>
                                 </div>
                                 <div className="form-group full-width">
                                     <label><FiInfo /> {locale === 'ar' ? 'وصف مختصر' : 'Description courte'}</label>

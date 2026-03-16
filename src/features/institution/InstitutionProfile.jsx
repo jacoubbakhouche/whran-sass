@@ -230,15 +230,17 @@ export default function InstitutionProfile() {
                 </section>
 
                 {/* Map View */}
-                <section className="profile-section">
-                    <h2 className="section-title">{t('openOnMap')}</h2>
-                    <div className="map-container-rounded">
-                        <MapView
-                            institutions={[institution]}
-                            height="200px"
-                        />
-                    </div>
-                </section>
+                {(institution.lat && institution.lng) && (
+                    <section className="profile-section">
+                        <h2 className="section-title">{t('openOnMap')}</h2>
+                        <div className="map-container-rounded">
+                            <MapView
+                                institutions={[institution]}
+                                height="200px"
+                            />
+                        </div>
+                    </section>
+                )}
 
                 {/* Reviews */}
                 <section className="profile-section">

@@ -34,7 +34,36 @@ export default function InstitutionProfileEditor() {
         is_enrollment_open: true,
         logo_url: '',
         cover_url: '',
+        lat: '',
+        lng: '',
     });
+
+    const [geolocating, setGeolocating] = useState(false);
+
+    const handleGetLocation = () => {
+        if (!navigator.geolocation) {
+            alert(locale === 'ar' ? 'المتصفح لا يدعم تحديد الموقع' : 'Géolocalisation non supportée');
+            return;
+        }
+
+        setGeolocating(true);
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setFormData(prev => ({
+                    ...prev,
+                    lat: position.coords.latitude.toFixed(6),
+                    lng: position.coords.longitude.toFixed(6)
+                }));
+                setGeolocating(false);
+            },
+            (error) => {
+                console.error('Geolocation error:', error);
+                alert(locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation');
+                setGeolocating(false);
+            },
+            { enableHighAccuracy: true }
+        );
+    };
 
     const [uploading, setUploading] = useState({ logo: false, cover: false });
 
@@ -58,6 +87,8 @@ export default function InstitutionProfileEditor() {
                 is_private: institution.is_private || false,
                 logo_url: institution.logo_url || '',
                 cover_url: institution.cover_url || '',
+                lat: institution.lat || '',
+                lng: institution.lng || '',
             };
 
             // 2. Fetch services separately
@@ -150,7 +181,9 @@ export default function InstitutionProfileEditor() {
                 founded_year: formData.founded_year ? parseInt(formData.founded_year) : null,
                 is_private: formData.is_private,
                 logo_url: formData.logo_url,
-                cover_url: formData.cover_url
+                cover_url: formData.cover_url,
+                lat: formData.lat ? parseFloat(formData.lat) : null,
+                lng: formData.lng ? parseFloat(formData.lng) : null,
             };
 
             const { error: instError } = await supabase
@@ -347,6 +380,42 @@ export default function InstitutionProfileEditor() {
                                 <label>{locale === 'ar' ? 'البلدية' : 'Commune'}</label>
                                 <input value={formData.commune} onChange={(e) => setFormData({ ...formData, commune: e.target.value })} placeholder="..." />
                             </div>
+                        </div>
+
+                        <div className="input-grid">
+                            <div className="input-group">
+                                <label>{locale === 'ar' ? 'خط العرض (Latitude)' : 'Latitude'}</label>
+                                <input type="number" step="any" value={formData.lat} onChange={(e) => setFormData({ ...formData, lat: e.target.value })} placeholder="36.1234" />
+                            </div>
+                            <div className="input-group">
+                                <label>{locale === 'ar' ? 'خط الطول (Longitude)' : 'Longitude'}</label>
+                                <input type="number" step="any" value={formData.lng} onChange={(e) => setFormData({ ...formData, lng: e.target.value })} placeholder="3.1234" />
+                            </div>
+                        </div>
+
+                        <div className="input-group" style={{ marginBottom: '16px' }}>
+                            <button 
+                                type="button" 
+                                className="btn-text-icon" 
+                                onClick={handleGetLocation}
+                                disabled={geolocating}
+                                style={{ 
+                                    fontSize: '0.95rem', 
+                                    color: 'var(--primary)', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px', 
+                                    background: 'var(--bg-main)', 
+                                    border: 'none', 
+                                    cursor: 'pointer', 
+                                    padding: '12px 18px',
+                                    borderRadius: 'var(--radius-md)',
+                                    width: 'fit-content'
+                                }}
+                            >
+                                <FiMapPin />
+                                {geolocating ? (locale === 'ar' ? 'جاري التحديد...' : 'Localisation...') : (locale === 'ar' ? 'تحديد موقعي الحالي (GPS)' : 'Ma position actuelle')}
+                            </button>
                         </div>
                         
                         <div className="input-group with-icon" style={{ marginBottom: '16px' }}>

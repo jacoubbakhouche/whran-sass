@@ -32,8 +32,12 @@ function createCustomIcon(typeString, getField) {
 function FitBounds({ institutions }) {
     const map = useMap();
     useEffect(() => {
-        if (institutions.length > 0) {
-            const bounds = L.latLngBounds(institutions.map(inst => [inst.lat, inst.lng]));
+        const validInstitutions = institutions.filter(inst => 
+            inst.lat !== undefined && inst.lat !== null && 
+            inst.lng !== undefined && inst.lng !== null
+        );
+        if (validInstitutions.length > 0) {
+            const bounds = L.latLngBounds(validInstitutions.map(inst => [inst.lat, inst.lng]));
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
         }
     }, [institutions, map]);
@@ -94,7 +98,10 @@ export default function MapView({ institutions = [], selectedId, onSelect, heigh
 
                 {institutions.length > 0 && <FitBounds institutions={institutions} />}
 
-                {institutions.map(inst => (
+                {institutions.filter(inst => 
+                    inst.lat !== undefined && inst.lat !== null && 
+                    inst.lng !== undefined && inst.lng !== null
+                ).map(inst => (
                     <Marker
                         key={inst.id}
                         position={[inst.lat, inst.lng]}
