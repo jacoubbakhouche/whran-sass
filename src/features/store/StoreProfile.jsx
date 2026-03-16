@@ -1,9 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiShoppingBag, FiStar, FiInfo, FiPhone, FiMapPin, FiMessageSquare, FiX } from 'react-icons/fi';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
 import { supabase } from '../../lib/supabase';
 import { useI18n } from '../../i18n';
 import './StoreProfile.css';
+
+// Fix Leaflet icon issue
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 function StarRating({ rating, size = 14 }) {
     return (
@@ -209,6 +221,30 @@ export default function StoreProfile() {
                         {products.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
+                    </div>
+                )}
+
+                {/* Map Location Section */}
+                {store.lat && store.lng && (
+                    <div className="store-map-section">
+                        <h2 className="section-title">
+                            <FiMapPin className="title-icon" />
+                            <span>{locale === 'ar' ? 'موقعنا على الخريطة' : 'Notre emplacement'}</span>
+                        </h2>
+                        <div className="store-map-container">
+                            <MapContainer 
+                                center={[store.lat, store.lng]} 
+                                zoom={15} 
+                                style={{ height: '100%', width: '100%' }}
+                                scrollWheelZoom={false}
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; OpenStreetMap'
+                                />
+                                <Marker position={[store.lat, store.lng]} />
+                            </MapContainer>
+                        </div>
                     </div>
                 )}
 
