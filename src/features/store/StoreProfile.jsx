@@ -297,6 +297,7 @@ export default function StoreProfile() {
                         </form>
                     </div>
                 </div>
+            )}
             {/* Review Modal */}
             {isReviewModalOpen && (
                 <div className="modal-overlay" onClick={() => setIsReviewModalOpen(false)}>
