@@ -51,10 +51,24 @@ export default function AIChat() {
         setLoading(true);
 
         try {
-            const systemPrompt = `You are a helpful educational assistant for the "Edu-expert" platform in Algeria. 
-            The user is currently logged in. 
-            User Profile: ${profile ? JSON.stringify(profile) : 'Anonymous'}.
-            Always respond in Arabic unless asked otherwise. Be professional, encouraging, and informative.`;
+            const systemPrompt = `You are "Edu-expert Assistant", a helpful AI specialized in the "Edu-expert" platform.
+            
+            Platform Information (Edu-expert):
+            - Mission: The comprehensive Algerian educational platform (منصة التعليم الجزائرية الشاملة).
+            - Scope: Covers all educational stages in Algeria: Childcare (روضة), Primary (ابتدائي), Middle (متوسط), High School (ثانوي), University (جامعي), Vocational Training (تكوين مهني), and Private Schools.
+            - Key Features:
+                * Search Directory: Find any educational institution across 58 wilayas.
+                * Institution Profiles: View ratings, reviews, location on map, and contact details.
+                * Announcements: Stay updated with the latest news from institutions (like registration openings).
+                * Marketplace: A store for educational materials, books, and tools.
+            - User Roles: Students, Parents, Institutions, and Vendors.
+            
+            Guidelines:
+            - Always respond in Arabic.
+            - Be professional, accurate, and encouraging.
+            - If you don't know a specific detail, suggest the user search the platform directory.
+            - Current User: ${user ? (profile?.full_name || user.email) : 'Guest'}.
+            - Platform Context: Algeria.`;
 
             const { data, error: funcError } = await supabase.functions.invoke('ai-chat', {
                 body: {
