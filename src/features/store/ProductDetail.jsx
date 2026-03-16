@@ -23,7 +23,7 @@ export default function ProductDetail() {
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .select('*, profiles(full_name)')
+                    .select('*, profiles:vendor_id(id, full_name, avatar_url)')
                     .eq('id', id)
                     .single();
                 
@@ -117,6 +117,26 @@ export default function ProductDetail() {
                     </div>
                     <div className="price-tag">{book.discount_price || book.price} دج</div>
                 </div>
+
+                {/* Vendor Section */}
+                {book.profiles && (
+                    <div className="vendor-badge-sticky" onClick={() => navigate(`/store/profile/${book.vendor_id}`)}>
+                        <div className="vendor-info-mini">
+                            <div className="vendor-avatar-mini">
+                                {book.profiles.avatar_url ? (
+                                    <img src={supabase.storage.from('avatars').getPublicUrl(book.profiles.avatar_url).data.publicUrl} alt="" />
+                                ) : (
+                                    <span>🏪</span>
+                                )}
+                            </div>
+                            <div className="vendor-text-mini">
+                                <span className="vendor-name-mini">{book.profiles.full_name}</span>
+                                <span className="vendor-label-mini">متجر موثوق</span>
+                            </div>
+                        </div>
+                        <FiChevronLeft className="vendor-arrow-mini" size={18} />
+                    </div>
+                )}
 
                 {/* Size Selector */}
                 {book.sizes && book.sizes.length > 0 && (
