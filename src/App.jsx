@@ -161,11 +161,6 @@ class ErrorBoundary extends Component {
 }
 
 function NavWrapper() {
-  const { pathname } = useLocation();
-  const hideOn = ['/store/book', '/cart', '/institution'];
-  const shouldHide = hideOn.some(path => pathname.startsWith(path));
-
-  if (shouldHide) return null;
   return <BottomNav />;
 }
 

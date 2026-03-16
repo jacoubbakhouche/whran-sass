@@ -37,8 +37,9 @@ export default function BottomNav() {
     '/login', '/institution-login', '/vendor-login', 
     '/pro-portal', '/admin-login', '/admin', 
     '/welcome', '/user-type',
-    '/institution-admin', '/vendor', '/institution', '/store'
+    '/cart', '/store/book', '/institution/'
   ];
+  // More specific check: hide on exact dashboard roots and specific detail pages
   if (hidden.some(p => location.pathname === p || location.pathname.startsWith(p))) return null;
 
   return (
