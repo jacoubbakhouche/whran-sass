@@ -10,6 +10,7 @@ import StoreView from './features/store/StoreView';
 import ProductDetail from './features/store/ProductDetail';
 import StoreProfile from './features/store/StoreProfile';
 import ProfileScreen from './features/user/ProfileScreen';
+import UserMessages from './features/user/UserMessages';
 import InstitutionProfile from './features/institution/InstitutionProfile';
 import AdminApp from './features/admin/AdminApp';
 import InstitutionAuth from './features/institution/InstitutionAuth';
@@ -90,6 +91,7 @@ function AppContent() {
       <Route path="/store/profile/:id" element={<UserLayout><StoreProfile /></UserLayout>} />
       <Route path="/cart" element={<UserLayout><CartScreen /></UserLayout>} />
       <Route path="/profile" element={<UserLayout><ProfileScreen /></UserLayout>} />
+      <Route path="/profile/messages" element={<UserLayout><UserMessages /></UserLayout>} />
 
       {/* ─── Shared detail ─── */}
       <Route path="/institution/:id" element={<UserLayout><InstitutionProfile /></UserLayout>} />

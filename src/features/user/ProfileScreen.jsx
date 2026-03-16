@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { FiEdit2, FiCheck, FiX, FiCamera, FiSettings, FiShoppingBag, FiHeart, FiGlobe, FiLock, FiBell, FiMapPin, FiChevronLeft } from 'react-icons/fi';
+import { FiEdit2, FiCheck, FiX, FiCamera, FiSettings, FiShoppingBag, FiHeart, FiGlobe, FiLock, FiBell, FiMapPin, FiChevronLeft, FiMessageSquare } from 'react-icons/fi';
 import './ProfileScreen.css';
 
 const WILAYA_NAMES = {};
@@ -24,6 +24,7 @@ export default function ProfileScreen() {
   const [profile, setProfile]   = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [orders, setOrders]     = useState([]);
+  const [threads, setThreads]   = useState([]);
   const [loading, setLoading]   = useState(true);
   const [tab, setTab]           = useState('favorites');
   const [isEditing, setIsEditing] = useState(false);
@@ -50,6 +51,31 @@ export default function ProfileScreen() {
         }
         if (favRes.data) setFavorites(favRes.data.map(f => f.institutions).filter(Boolean));
         if (ordRes.data) setOrders(ordRes.data);
+
+        // Fetch message threads
+        const { data: messages, error: msgError } = await supabase
+          .from('institution_messages')
+          .select('*, institutions(id, name_ar, logo_url)')
+          .or(`sender_id.eq.${u.id},reply_to.not.is.null`)
+          .order('created_at', { ascending: true });
+
+        if (!msgError && messages) {
+          const rootMessages = messages.filter(m => !m.reply_to && m.sender_id === u.id);
+          const replies = messages.filter(m => !!m.reply_to);
+
+          const threadList = rootMessages.map(root => {
+            const threadReplies = replies.filter(r => r.reply_to === root.id);
+            const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : root;
+            return {
+              ...root,
+              replies: threadReplies,
+              last_message: lastMsg,
+              institution: root.institutions
+            };
+          }).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
+          
+          setThreads(threadList);
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -199,6 +225,7 @@ export default function ProfileScreen() {
       <div className="profile-tabs h-scroll" style={{ padding: '0 var(--space-5)', borderBottom: '1px solid var(--border)' }}>
         {[
           { id: 'favorites', label: 'المفضلة', icon: <FiHeart /> },
+          { id: 'messages',  label: 'رسائلي',   icon: <FiMessageSquare /> },
           { id: 'orders',    label: 'طلباتي',   icon: <FiShoppingBag /> },
           { id: 'settings',  label: 'الإعدادات', icon: <FiSettings /> },
         ].map(t => (
@@ -211,6 +238,38 @@ export default function ProfileScreen() {
           </button>
         ))}
       </div>
+
+      {/* ─── Messages Tab ─── */}
+      {tab === 'messages' && (
+        <div className="profile-section">
+          {threads.length === 0 ? (
+            <div className="empty-state">
+              <span className="empty-icon">💬</span>
+              <h3>لا رسائل بعد</h3>
+              <p>تواصل مع المؤسسات التعليمية للاستفسار</p>
+              <button className="btn-primary" onClick={() => navigate('/search')}>
+                ابدأ البحث
+              </button>
+            </div>
+          ) : (
+            <div className="profile-messages-list">
+              {threads.slice(0, 3).map(thread => (
+                <div key={thread.id} className="profile-msg-card card animate-up" onClick={() => navigate('/profile/messages')}>
+                  <div className="profile-msg-card__header">
+                    <span className="profile-msg-card__sender">{thread.institution?.name_ar || 'مؤسسة'}</span>
+                    <span className="profile-msg-card__date">{new Date(thread.last_message.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <p className="profile-msg-card__subject">{thread.subject}</p>
+                  <p className="profile-msg-card__preview">{thread.last_message.content}</p>
+                </div>
+              ))}
+              <button className="btn-outline w-full mt-4" onClick={() => navigate('/profile/messages')}>
+                عرض كل الرسائل
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ─── Favorites Tab ─── */}
       {tab === 'favorites' && (
