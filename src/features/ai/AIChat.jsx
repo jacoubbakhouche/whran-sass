@@ -4,8 +4,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { FiMessageSquare, FiSend, FiX, FiUser, FiCpu } from 'react-icons/fi';
 import './AIChat.css';
 
-const GROK_API_KEY = import.meta.env.VITE_GROK_API_KEY;
-
 export default function AIChat() {
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
@@ -58,27 +56,18 @@ export default function AIChat() {
             User Profile: ${profile ? JSON.stringify(profile) : 'Anonymous'}.
             Always respond in Arabic unless asked otherwise. Be professional, encouraging, and informative.`;
 
-            const response = await fetch('https://api.x.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GROK_API_KEY}`
-                },
-                body: JSON.stringify({
+            const { data, error } = await supabase.functions.invoke('ai-chat', {
+                body: {
                     messages: [
                         { role: 'system', content: systemPrompt },
                         ...messages,
                         userMessage
-                    ],
-                    model: 'grok-beta',
-                    stream: false,
-                    temperature: 0.7
-                })
+                    ]
+                }
             });
 
-            if (!response.ok) throw new Error('Failed to fetch from xAI');
+            if (error) throw error;
 
-            const data = await response.json();
             const aiMessage = { 
                 role: 'assistant', 
                 content: data.choices[0].message.content 
