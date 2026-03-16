@@ -10,6 +10,9 @@ export default function ProductDetail() {
     const navigate = useNavigate();
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedSize, setSelectedSize] = useState('M');
+    const [selectedColor, setSelectedColor] = useState('#333333');
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     
     useEffect(() => {
         const fetchProduct = async () => {

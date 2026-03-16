@@ -103,7 +103,7 @@ export default function StoreView() {
       {/* ─── My Library ─── */}
       <section className="store-section">
         <div className="section-header">
-          <h2>مكتبتي</h2>
+          <h2>المتجر</h2>
           <button className="view-all">مشاهدة الكل 〉</button>
         </div>
         <div className="h-scroll library-scroll">

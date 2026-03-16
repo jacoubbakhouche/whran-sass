@@ -177,7 +177,7 @@ export default function HomeScreen() {
       {/* SECTION 4: Institutions Feed */}
       <section className="home-section-v2">
         <div className="section-header">
-          <h2>مؤسسات تعليمية</h2>
+          <h2>المتجر</h2>
           <Link to="/search" className="view-link">الكل <FiChevronLeft /></Link>
         </div>
         <div className="h-scroll boutique-scroll">
