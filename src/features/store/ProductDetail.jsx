@@ -43,8 +43,23 @@ export default function ProductDetail() {
 
     if (loading) {
         return (
-            <div className="product-detail-page loading">
-                <div className="skeleton" style={{ width: '80%', height: '400px', borderRadius: '24px' }} />
+            <div className="product-detail-page" dir="rtl">
+                <header className="product-detail-header">
+                    <button className="icon-btn" onClick={() => navigate(-1)}><FiChevronLeft size={24} /></button>
+                </header>
+                <div className="skeleton" style={{ width: '100%', height: '350px', borderRadius: '0 0 40px 40px' }} />
+                <div style={{ padding: '24px' }}>
+                    <div className="skeleton skeleton-text" style={{ width: '60%', height: '24px', marginBottom: '16px' }} />
+                    <div className="skeleton skeleton-text medium" />
+                    <div style={{ display: 'flex', gap: '12px', margin: '20px 0' }}>
+                        <div className="skeleton skeleton-circle" style={{ width: '40px', height: '40px' }} />
+                        <div style={{ flex: 1 }}>
+                            <div className="skeleton skeleton-text short" />
+                            <div className="skeleton skeleton-text" style={{ width: '120px' }} />
+                        </div>
+                    </div>
+                    <div className="skeleton" style={{ width: '100%', height: '100px', borderRadius: '16px' }} />
+                </div>
             </div>
         );
     }
