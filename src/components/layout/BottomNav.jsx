@@ -37,7 +37,7 @@ export default function BottomNav() {
     '/login', '/institution-login', '/vendor-login', 
     '/pro-portal', '/admin-login', '/admin', 
     '/welcome', '/user-type',
-    '/institution-admin', '/vendor', '/institution'
+    '/institution-admin', '/vendor', '/institution', '/store'
   ];
   if (hidden.some(p => location.pathname === p || location.pathname.startsWith(p))) return null;
 

@@ -60,11 +60,14 @@ export default function StoreProfile() {
                 // Fetch store profile
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('*, wilayas(name_ar, name_fr)')
+                    .select('*')
                     .eq('id', id)
                     .single();
                 
-                if (profileError) throw profileError;
+                if (profileError) {
+                    console.error('Profile Fetch Error:', profileError);
+                    throw profileError;
+                }
                 setStore(profile);
 
                 // Fetch store products
@@ -131,15 +134,15 @@ export default function StoreProfile() {
                             store.full_name?.[0] || '🏪'
                         )}
                     </div>
-                    <h1>{store.full_name}</h1>
+                    <h1>{store.store_name || store.full_name}</h1>
                     <div className="store-badge-row">
                         <span className="store-badge">
                             {locale === 'ar' ? 'متجر معتمد' : 'Vendeur Certifié'}
                         </span>
-                        {store.wilayas && (
+                        {store.wilaya && (
                             <span className="store-location-badge">
                                 <FiMapPin size={12} />
-                                {locale === 'ar' ? store.wilayas.name_ar : store.wilayas.name_fr}
+                                {store.wilaya}
                             </span>
                         )}
                     </div>
@@ -273,7 +276,7 @@ export default function StoreProfile() {
                                 setSendingMessage(false);
                             }
                         }}>
-                            <p className="recipient-label">{locale === 'ar' ? 'إلى:' : 'À:'} <strong>{store.full_name}</strong></p>
+                            <p className="recipient-label">{locale === 'ar' ? 'إلى:' : 'À:'} <strong>{store.store_name || store.full_name}</strong></p>
                             <textarea 
                                 placeholder={locale === 'ar' ? 'اكتب استفسارك هنا...' : 'Votre message...'}
                                 value={messageContent}

@@ -120,7 +120,7 @@ export default function ProductDetail() {
 
                 {/* Vendor Section */}
                 {book.profiles && (
-                    <div className="vendor-badge-sticky" onClick={() => navigate(`/store/profile/${book.seller_id}`)}>
+                    <div className="vendor-badge-sticky" onClick={() => book.seller_id && navigate(`/store/profile/${book.seller_id}`)}>
                         <div className="vendor-info-mini">
                             <div className="vendor-avatar-mini">
                                 {book.profiles.avatar_url ? (
