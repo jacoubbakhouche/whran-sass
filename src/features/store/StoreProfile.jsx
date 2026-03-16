@@ -1,9 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiShoppingBag, FiStar, FiInfo } from 'react-icons/fi';
+import { FiArrowRight, FiShoppingBag, FiStar, FiInfo, FiPhone, FiMapPin, FiMessageSquare, FiX } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import { useI18n } from '../../i18n';
 import './StoreProfile.css';
+
+function StarRating({ rating, size = 14 }) {
+    return (
+        <div className="star-rating">
+            {[1, 2, 3, 4, 5].map(star => (
+                <FiStar
+                    key={star}
+                    size={size}
+                    fill={star <= Math.round(rating) ? '#F59E0B' : 'transparent'}
+                    stroke={star <= Math.round(rating) ? '#F59E0B' : '#CBD5E1'}
+                />
+            ))}
+        </div>
+    );
+}
 
 function ProductCard({ product }) {
     const navigate = useNavigate();
@@ -32,7 +47,11 @@ export default function StoreProfile() {
     const { locale, dir } = useI18n();
     const [store, setStore] = useState(null);
     const [products, setProducts] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [messageContent, setMessageContent] = useState('');
+    const [sendingMessage, setSendingMessage] = useState(false);
 
     useEffect(() => {
         const fetchStoreData = async () => {
@@ -41,7 +60,7 @@ export default function StoreProfile() {
                 // Fetch store profile
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('*')
+                    .select('*, wilayas(name_ar, name_fr)')
                     .eq('id', id)
                     .single();
                 
@@ -57,6 +76,16 @@ export default function StoreProfile() {
                 
                 if (prodsError) throw prodsError;
                 setProducts(prods || []);
+
+                // Fetch reviews
+                const { data: revs, error: revsError } = await supabase
+                    .from('reviews')
+                    .select('*, profiles(full_name, avatar_url)')
+                    .eq('seller_id', id)
+                    .order('created_at', { ascending: false });
+                
+                if (revsError) console.error('Reviews Error:', revsError);
+                setReviews(revs || []);
             } catch (err) {
                 console.error('Error fetching store profile:', err);
             } finally {
@@ -96,12 +125,24 @@ export default function StoreProfile() {
 
                 <div className="store-hero">
                     <div className="store-avatar">
-                        {store.full_name?.[0] || '🏪'}
+                        {store.avatar_url ? (
+                            <img src={supabase.storage.from('avatars').getPublicUrl(store.avatar_url).data.publicUrl} alt="" />
+                        ) : (
+                            store.full_name?.[0] || '🏪'
+                        )}
                     </div>
                     <h1>{store.full_name}</h1>
-                    <span className="store-badge">
-                        {locale === 'ar' ? 'متجر معتمد' : 'Vendeur Certifié'}
-                    </span>
+                    <div className="store-badge-row">
+                        <span className="store-badge">
+                            {locale === 'ar' ? 'متجر معتمد' : 'Vendeur Certifié'}
+                        </span>
+                        {store.wilayas && (
+                            <span className="store-location-badge">
+                                <FiMapPin size={12} />
+                                {locale === 'ar' ? store.wilayas.name_ar : store.wilayas.name_fr}
+                            </span>
+                        )}
+                    </div>
                     
                     <div className="store-stats">
                         <div className="stat-item">
@@ -110,14 +151,37 @@ export default function StoreProfile() {
                         </div>
                         <div className="divider" />
                         <div className="stat-item">
-                            <span className="stat-value">4.8</span>
-                            <span className="stat-label">{locale === 'ar' ? 'تقييم' : 'Note'}</span>
+                            <span className="stat-value">{store.rating_avg || '4.8'}</span>
+                            <div className="stat-label-with-stars">
+                                <StarRating rating={store.rating_avg || 4.8} size={10} />
+                                <span className="stat-label">({reviews.length})</span>
+                            </div>
                         </div>
+                    </div>
+
+                    {store.description && (
+                        <p className="store-description-bio">{store.description}</p>
+                    )}
+
+                    <div className="store-hero-actions">
+                        <button className="btn-contact-store" onClick={() => setIsMessageModalOpen(true)}>
+                            <FiMessageSquare />
+                            <span>{locale === 'ar' ? 'تراسل مع المتجر' : 'Contacter'}</span>
+                        </button>
+                        {store.phone && (
+                            <a href={`tel:${store.phone}`} className="btn-call-store">
+                                <FiPhone />
+                            </a>
+                        )}
                     </div>
                 </div>
             </header>
 
             <div className="store-content">
+                <div className="store-tabs-nav">
+                    <button className="store-tab active">{locale === 'ar' ? 'المنتجات' : 'Produits'}</button>
+                    <button className="store-tab">{locale === 'ar' ? 'التقييمات' : 'Avis'}</button>
+                </div>
                 <h2>
                     <FiShoppingBag />
                     <span>{locale === 'ar' ? 'المنتجات المتوفرة' : 'Produits disponibles'}</span>
@@ -135,7 +199,94 @@ export default function StoreProfile() {
                         ))}
                     </div>
                 )}
+
+                {/* Reviews Section */}
+                <div className="store-reviews-section">
+                    <h2 className="section-title">
+                        <FiStar className="title-icon" />
+                        <span>{locale === 'ar' ? 'تقييمات العملاء' : 'Avis clients'}</span>
+                    </h2>
+                    
+                    {reviews.length === 0 ? (
+                        <p className="no-reviews-msg">{locale === 'ar' ? 'لا توجد تقييمات لهذا المتجر بعد' : 'Aucun avis pour ce magasin'}</p>
+                    ) : (
+                        <div className="reviews-list-vertical">
+                            {reviews.map(review => (
+                                <div key={review.id} className="review-card-mini">
+                                    <div className="rc-header">
+                                        <div className="rc-user">
+                                            <div className="rc-avatar">
+                                                {review.profiles?.avatar_url ? (
+                                                    <img src={supabase.storage.from('avatars').getPublicUrl(review.profiles.avatar_url).data.publicUrl} alt="" />
+                                                ) : review.profiles?.full_name?.[0] || 'U'}
+                                            </div>
+                                            <div className="rc-info">
+                                                <span className="rc-name">{review.profiles?.full_name}</span>
+                                                <StarRating rating={review.rating} size={12} />
+                                            </div>
+                                        </div>
+                                        <span className="rc-date">{new Date(review.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <p className="rc-comment">{review.comment}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Message Modal */}
+            {isMessageModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsMessageModalOpen(false)}>
+                    <div className="message-modal glass animate-up" onClick={e => e.stopPropagation()}>
+                        <div className="message-modal__header">
+                            <h3>{locale === 'ar' ? 'تواصل مع المتجر' : 'Contacter le magasin'}</h3>
+                            <button className="close-btn" onClick={() => setIsMessageModalOpen(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <form className="message-modal__body" onSubmit={async (e) => {
+                            e.preventDefault();
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) { navigate('/login'); return; }
+                            
+                            setSendingMessage(true);
+                            try {
+                                const { error } = await supabase
+                                    .from('institution_messages') // Reusing same table for now or a similar pattern
+                                    .insert([{
+                                        institution_id: store.id, // Assuming profile ID is used as the destination
+                                        sender_id: user.id,
+                                        sender_name: user.user_metadata?.full_name || user.email,
+                                        subject: `استفسار عن منتج من ${store.full_name}`,
+                                        content: messageContent,
+                                        type: 'store_query'
+                                    }]);
+                                
+                                if (error) throw error;
+                                alert(locale === 'ar' ? 'تم إرسال رسالتك بنجاح!' : 'Message envoyé!');
+                                setIsMessageModalOpen(false);
+                                setMessageContent('');
+                            } catch (err) {
+                                alert(err.message);
+                            } finally {
+                                setSendingMessage(false);
+                            }
+                        }}>
+                            <p className="recipient-label">{locale === 'ar' ? 'إلى:' : 'À:'} <strong>{store.full_name}</strong></p>
+                            <textarea 
+                                placeholder={locale === 'ar' ? 'اكتب استفسارك هنا...' : 'Votre message...'}
+                                value={messageContent}
+                                onChange={e => setMessageContent(e.target.value)}
+                                required
+                            />
+                            <button type="submit" className="btn-send-message" disabled={sendingMessage}>
+                                {sendingMessage ? '...' : (locale === 'ar' ? 'إرسال الرسالة' : 'Envoyer')}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

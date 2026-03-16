@@ -2,13 +2,14 @@
     min-height: 100vh;
     background: var(--bg-main, #1F1D1A);
     color: var(--text-main, #FFFFFF);
-    padding-bottom: 100px;
+    padding-bottom: 120px;
 }
 
 .store-profile-header {
-    background: linear-gradient(to bottom, rgba(45, 106, 79, 0.4), rgba(31, 29, 26, 0));
-    padding: 2rem 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(99, 102, 241, 0.15), rgba(31, 29, 26, 0));
+    padding: 2rem 1.5rem 3rem;
     position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .store-profile-nav {
@@ -19,7 +20,7 @@
 }
 
 .back-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     width: 40px;
@@ -34,7 +35,7 @@
 }
 
 .back-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateX(5px);
 }
 
@@ -50,68 +51,391 @@
 .store-avatar {
     width: 100px;
     height: 100px;
-    background: linear-gradient(135deg, var(--accent-warm, #E07A3A), #D16A2A);
-    border-radius: 28px;
+    background: linear-gradient(135deg, #6366F1, #4F46E5);
+    border-radius: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
     color: white;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 10px 25px rgba(224, 122, 58, 0.3);
+    margin-bottom: 1.2rem;
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.05);
+}
+
+.store-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .store-hero h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 0.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.store-badge-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 .store-badge {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 4px 12px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818CF8;
+    padding: 6px 14px;
     border-radius: 99px;
-    font-size: 0.85rem;
-    opacity: 0.8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.store-location-badge {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .store-stats {
     display: flex;
-    gap: 2rem;
-    margin-top: 1.5rem;
+    gap: 1.5rem;
+    margin: 1rem 0;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stat-item {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .stat-value {
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: white;
 }
 
 .stat-label {
-    font-size: 0.8rem;
-    opacity: 0.6;
+    font-size: 0.7rem;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+}
+
+.stat-label-with-stars {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.star-rating {
+    display: flex;
+    gap: 2px;
+}
+
+.store-description-bio {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    opacity: 0.7;
+    margin: 1.2rem 0;
+    max-width: 90%;
+}
+
+.store-hero-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.btn-contact-store {
+    flex: 1;
+    background: #6366F1;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-contact-store:hover {
+    background: #4F46E5;
+    transform: translateY(-2px);
+}
+
+.btn-call-store {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-call-store:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .store-content {
     padding: 0 1.5rem;
+    margin-top: 2rem;
+}
+
+.store-tabs-nav {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px;
+    border-radius: 14px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.store-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.store-tab.active {
+    background: rgba(255, 255, 255, 0.07);
+    color: white;
 }
 
 .store-content h2 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     gap: 10px;
+    font-weight: 700;
 }
 
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.5rem;
+    gap: 1.2rem;
+}
+
+.store-book-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.store-book-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.store-book-card__cover {
+    aspect-ratio: 3/4;
+    background: rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+}
+
+.store-book-card__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.store-book-card__info {
+    padding: 12px;
+}
+
+.store-book-card__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.store-book-card__price {
+    font-weight: 800;
+    color: #6366F1;
+    font-size: 1rem;
+}
+
+/* Reviews Section */
+.store-reviews-section {
+    margin-top: 3.5rem;
+}
+
+.review-card-mini {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.rc-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.rc-user {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.rc-avatar {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.rc-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rc-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.rc-date {
+    font-size: 0.75rem;
+    opacity: 0.4;
+}
+
+.rc-comment {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: flex-end;
+    z-index: 1100;
+}
+
+.message-modal {
+    width: 100%;
+    background: #1F1D1A;
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    padding: 2rem 1.5rem 3rem;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.message-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.message-modal__header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.close-btn {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recipient-label {
+    opacity: 0.6;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.message-modal__body textarea {
+    width: 100%;
+    height: 150px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 1.2rem;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    resize: none;
+}
+
+.btn-send-message {
+    width: 100%;
+    background: #6366F1;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
 }
 
 @media (max-width: 480px) {
@@ -119,18 +443,4 @@
         grid-template-columns: 1fr 1fr;
         gap: 1rem;
     }
-}
-
-/* Reusing BookCard styles from StoreView if possible, or defining local overrides */
-.store-book-card {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 20px;
-    padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
-}
-
-.store-book-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.07);
 }
