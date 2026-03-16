@@ -86,7 +86,7 @@ export default function AIChat() {
             };
             setMessages(prev => [...prev, errorMessage]);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
