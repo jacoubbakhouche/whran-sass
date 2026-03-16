@@ -50,8 +50,12 @@ export default function StoreProfile() {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [messageContent, setMessageContent] = useState('');
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState('');
     const [sendingMessage, setSendingMessage] = useState(false);
+    const [submittingReview, setSubmittingReview] = useState(false);
 
     useEffect(() => {
         const fetchStoreData = async () => {
@@ -208,6 +212,10 @@ export default function StoreProfile() {
                     <h2 className="section-title">
                         <FiStar className="title-icon" />
                         <span>{locale === 'ar' ? 'تقييمات العملاء' : 'Avis clients'}</span>
+                        <button className="btn-add-review-trigger" onClick={() => setIsReviewModalOpen(true)}>
+                            <FiPlusCircle />
+                            {locale === 'ar' ? 'أضف تقييم' : 'Ajouter un avis'}
+                        </button>
                     </h2>
                     
                     {reviews.length === 0 ? (
@@ -289,7 +297,71 @@ export default function StoreProfile() {
                         </form>
                     </div>
                 </div>
+            {/* Review Modal */}
+            {isReviewModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsReviewModalOpen(false)}>
+                    <div className="message-modal glass animate-up" onClick={e => e.stopPropagation()}>
+                        <div className="message-modal__header">
+                            <h3>{locale === 'ar' ? 'أضف تقييمك' : 'Ajouter votre avis'}</h3>
+                            <button className="close-btn" onClick={() => setIsReviewModalOpen(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <form className="message-modal__body" onSubmit={async (e) => {
+                            e.preventDefault();
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) { navigate('/login'); return; }
+                            
+                            setSubmittingReview(true);
+                            try {
+                                const { error } = await supabase
+                                    .from('reviews')
+                                    .insert([{
+                                        user_id: user.id,
+                                        seller_id: id,
+                                        rating: reviewRating,
+                                        comment: reviewComment
+                                    }]);
+                                
+                                if (error) throw error;
+                                alert(locale === 'ar' ? 'شكراً لتقييمك!' : 'Merci pour votre avis !');
+                                setIsReviewModalOpen(false);
+                                setReviewComment('');
+                                // Refresh reviews locally
+                                window.location.reload(); 
+                            } catch (err) {
+                                alert(err.message);
+                            } finally {
+                                setSubmittingReview(false);
+                            }
+                        }}>
+                            <div className="rating-select-row">
+                                {[1, 2, 3, 4, 5].map(num => (
+                                    <button 
+                                        key={num} 
+                                        type="button" 
+                                        className={`star-select-btn ${reviewRating >= num ? 'active' : ''}`}
+                                        onClick={() => setReviewRating(num)}
+                                    >
+                                        <FiStar fill={reviewRating >= num ? '#F59E0B' : 'transparent'} />
+                                    </button>
+                                ))}
+                            </div>
+                            <textarea 
+                                placeholder={locale === 'ar' ? 'كيف كانت تجربتك مع هذا المتجر؟' : 'Votre commentaire...'}
+                                value={reviewComment}
+                                onChange={e => setReviewComment(e.target.value)}
+                                required
+                            />
+                            <button type="submit" className="btn-send-message" disabled={submittingReview}>
+                                {submittingReview ? '...' : (locale === 'ar' ? 'نشر التقييم' : 'Publier')}
+                            </button>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
 }
+
+import { FiPlusCircle } from 'react-icons/fi';

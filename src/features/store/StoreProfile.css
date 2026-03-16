@@ -148,6 +148,30 @@
     gap: 2px;
 }
 
+.rating-select-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+}
+
+.star-select-btn {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #F59E0B;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.star-select-btn:hover {
+    transform: scale(1.2);
+}
+
+.star-select-btn:not(.active) {
+    color: rgba(255, 255, 255, 0.2);
+}
+
 .store-description-bio {
     font-size: 0.9rem;
     line-height: 1.6;
@@ -188,8 +212,8 @@
 .btn-call-store {
     width: 50px;
     height: 50px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #10B981; /* Green color for phone */
+    border: none;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -197,10 +221,13 @@
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 .btn-call-store:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
 .store-content {
@@ -295,6 +322,33 @@
     font-weight: 800;
     color: #6366F1;
     font-size: 1rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.btn-add-review-trigger {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #818CF8;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-add-review-trigger:hover {
+    background: rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
 }
 
 /* Reviews Section */
