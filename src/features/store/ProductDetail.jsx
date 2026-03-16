@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar } from 'react-icons/fi';
+import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar, FiShoppingBag } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 
 import './ProductDetail.css';
