@@ -61,6 +61,7 @@ export default function StoreView() {
   const [selectedTag, setSelectedTag] = useState('Popular');
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Tags for the sidebar
   const tags = [
@@ -101,6 +102,15 @@ export default function StoreView() {
     loadData();
   }, []);
 
+  const filteredProducts = products.filter(product => 
+    product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.author?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredLibrary = myLibrary.filter(product =>
+    product.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="store-page" dir="rtl">
       {/* ─── Header ─── */}
@@ -122,7 +132,12 @@ export default function StoreView() {
         
         <div className="search-bar-premium">
           <FiSearch className="search-icon" />
-          <input type="text" placeholder="ابحث عن كتب، أدوات، أو مذكرات..." />
+          <input 
+            type="text" 
+            placeholder="ابحث عن كتب، أدوات، أو مذكرات..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
       </header>
 
@@ -142,7 +157,7 @@ export default function StoreView() {
               </div>
             </div>
           )) :
-            myLibrary.map(item => (
+            filteredLibrary.map(item => (
               <BookCard key={item.id} product={item} layout="vertical" />
             ))
           }
@@ -176,7 +191,7 @@ export default function StoreView() {
               </div>
             </div>
           )) :
-            products.slice(0, 6).map(item => (
+            filteredProducts.slice(0, 6).map(item => (
               <BookCard key={item.id} product={item} layout="compact" />
             ))
           }

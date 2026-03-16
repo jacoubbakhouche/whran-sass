@@ -7,7 +7,7 @@
 
 /* --- Premium Header --- */
 .store-header-premium {
-  padding: 60px 24px 30px;
+  padding: 60px 0 30px;
   background: #fff;
   border-radius: 0 0 40px 40px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
@@ -19,16 +19,17 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  padding: 0 0 0 24px; /* Remove right padding (edge) */
 }
 
 .store-logo-container {
-  height: 48px;
+  height: 60px;
   display: flex;
   align-items: center;
 }
 
 .store-logo {
-  height: 32px;
+  height: 48px;
   width: auto;
   object-fit: contain;
 }
@@ -118,6 +119,7 @@
   padding: 14px 16px 14px 48px;
   display: flex;
   align-items: center;
+  margin: 0 24px;
 }
 
 .search-icon {
