@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { INSTITUTION_TYPES, BALADIYAS } from '../../lib/mockData';
 import MapView from '../../components/map/MapView';
-import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiUsers, FiShare2, FiChevronRight, FiChevronLeft, FiHeart, FiClock, FiX } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiUsers, FiShare2, FiChevronRight, FiChevronLeft, FiHeart, FiClock, FiX, FiMessageSquare } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import './InstitutionProfile.css';
 
