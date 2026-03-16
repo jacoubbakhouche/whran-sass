@@ -298,8 +298,35 @@ export default function SearchResults() {
       <div className="search-results-area">
         {loading ? (
           <div className="search-loading">
-            {[1,2,3,4].map(n => (
-              <div key={n} className="skeleton" style={{ height: 80, borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-3)' }} />
+            {activeTab === 'institutions' && [1,2,3,4].map(n => (
+              <div key={n} className="search-inst-card skeleton-card-wrap" style={{ display: 'flex' }}>
+                <div className="skeleton skeleton-circle" style={{ width: '48px', height: '48px', margin: '12px' }} />
+                <div style={{ flex: 1, padding: '12px' }}>
+                  <div className="skeleton skeleton-text medium" />
+                  <div className="skeleton skeleton-text short" />
+                </div>
+              </div>
+            ))}
+            {activeTab === 'products' && (
+              <div className="search-grid">
+                {[1,2,3,4].map(n => (
+                  <div key={n} className="search-product-card skeleton-card-wrap">
+                    <div className="skeleton" style={{ height: '140px', width: '100%' }} />
+                    <div style={{ padding: '12px' }}>
+                      <div className="skeleton skeleton-text" />
+                      <div className="skeleton skeleton-text short" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {activeTab === 'announcements' && [1,2,3].map(n => (
+              <div key={n} className="search-ann-card skeleton-card-wrap" style={{ padding: '16px' }}>
+                <div className="skeleton skeleton-text medium" style={{ marginBottom: '12px' }} />
+                <div className="skeleton skeleton-text" />
+                <div className="skeleton skeleton-text" />
+                <div className="skeleton skeleton-text short" />
+              </div>
             ))}
           </div>
         ) : (

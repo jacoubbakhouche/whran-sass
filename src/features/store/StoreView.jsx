@@ -133,9 +133,19 @@ export default function StoreView() {
           <button className="text-btn">عرض الكل</button>
         </div>
         <div className="h-scroll items-scroll">
-          {myLibrary.map(item => (
-            <BookCard key={item.id} product={item} layout="vertical" />
-          ))}
+          {loading ? [1,2,3].map(n => (
+            <div key={n} className="store-book-card vertical" style={{ pointerEvents: 'none' }}>
+              <div className="skeleton" style={{ height: '220px', width: '100%' }} />
+              <div style={{ padding: '16px' }}>
+                <div className="skeleton skeleton-text" />
+                <div className="skeleton skeleton-text short" />
+              </div>
+            </div>
+          )) :
+            myLibrary.map(item => (
+              <BookCard key={item.id} product={item} layout="vertical" />
+            ))
+          }
         </div>
       </section>
 
@@ -157,9 +167,19 @@ export default function StoreView() {
         </div>
         
         <div className="bestseller-grid">
-          {products.slice(0, 6).map(item => (
-            <BookCard key={item.id} product={item} layout="compact" />
-          ))}
+          {loading ? [1,2,3,4].map(n => (
+            <div key={n} className="store-book-card compact" style={{ pointerEvents: 'none' }}>
+              <div className="skeleton" style={{ width: '100px', height: '120px' }} />
+              <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div className="skeleton skeleton-text" />
+                <div className="skeleton skeleton-text short" />
+              </div>
+            </div>
+          )) :
+            products.slice(0, 6).map(item => (
+              <BookCard key={item.id} product={item} layout="compact" />
+            ))
+          }
         </div>
       </section>
     </div>

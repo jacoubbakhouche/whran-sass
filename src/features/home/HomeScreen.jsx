@@ -133,11 +133,21 @@ export default function HomeScreen() {
         <div className="header-top">
           <div className="header-user">
             <div className="avatar-wrap" onClick={() => navigate('/profile')}>
-              {avatarUrl ? <img src={avatarUrl} alt="avatar" /> : <div className="avatar-placeholder">👤</div>}
+              {loading ? <div className="skeleton skeleton-circle" style={{ width: '100%', height: '100%' }} /> :
+               avatarUrl ? <img src={avatarUrl} alt="avatar" /> : <div className="avatar-placeholder">👤</div>}
             </div>
             <div className="user-text">
-              <p className="greeting">{greeting}،</p>
-              <h1 className="name">{userName || (locale === 'ar' ? 'زائر' : 'Visiteur')}</h1>
+              {loading ? (
+                <>
+                  <div className="skeleton skeleton-text short" />
+                  <div className="skeleton skeleton-text" style={{ width: '120px', height: '18px' }} />
+                </>
+              ) : (
+                <>
+                  <p className="greeting">{greeting}،</p>
+                  <h1 className="name">{userName || (locale === 'ar' ? 'زائر' : 'Visiteur')}</h1>
+                </>
+              )}
             </div>
           </div>
           <button className="notif-btn" onClick={() => navigate('/profile')}>
@@ -181,7 +191,15 @@ export default function HomeScreen() {
           <Link to="/search" className="view-link">الكل <FiChevronLeft /></Link>
         </div>
         <div className="h-scroll boutique-scroll">
-          {loading ? [1,2,3].map(n => <div key={n} className="skeleton inst-skelton" />) :
+          {loading ? [1,2,3].map(n => (
+            <div key={n} className="boutique-inst-card skeleton-card-wrap">
+              <div className="skeleton inst-skelton" style={{ height: '100px', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }} />
+              <div style={{ padding: '12px' }}>
+                <div className="skeleton skeleton-text" />
+                <div className="skeleton skeleton-text short" />
+              </div>
+            </div>
+          )) :
             institutions.length > 0 ? institutions.map(inst => <InstitutionMiniCard key={inst.id} inst={inst} />) :
             <div className="empty">لا توجد مؤسسات حالياً</div>
           }
@@ -195,7 +213,15 @@ export default function HomeScreen() {
           <Link to="/search" className="view-link">المزيد <FiChevronLeft /></Link>
         </div>
         <div className="announcement-list-v2">
-          {loading ? [1,2].map(n => <div key={n} className="skeleton ann-skelton" />) :
+          {loading ? [1,2].map(n => (
+            <div key={n} className="ann-item-v2 skeleton-ann-wrap">
+              <div className="skeleton skeleton-circle" style={{ width: '8px', height: '8px', flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div className="skeleton skeleton-text medium" style={{ height: '14px' }} />
+                <div className="skeleton skeleton-text short" />
+              </div>
+            </div>
+          )) :
             announcements.map(ann => (
               <div key={ann.id} className="ann-item-v2" onClick={() => navigate(`/institution/${ann.institution_id}`)}>
                 <div className="ann-dot" />

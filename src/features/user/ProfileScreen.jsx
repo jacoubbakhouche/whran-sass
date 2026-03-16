@@ -94,10 +94,21 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <div className="profile-page page" dir="rtl">
-        <div style={{ padding: '80px 20px', textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 80, height: 80, borderRadius: '50%', margin: '0 auto 16px' }} />
-          <div className="skeleton" style={{ width: 140, height: 18, borderRadius: 8, margin: '0 auto 8px' }} />
-          <div className="skeleton" style={{ width: 90, height: 14, borderRadius: 8, margin: '0 auto' }} />
+        <div className="profile-header" style={{ paddingBottom: '40px' }}>
+          <div className="profile-header__avatar-wrap">
+            <div className="profile-header__avatar skeleton skeleton-circle" />
+          </div>
+          <div style={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="skeleton skeleton-text" style={{ width: '140px', height: '20px' }} />
+            <div className="skeleton skeleton-text short" />
+            <div className="skeleton" style={{ width: '160px', height: '40px', marginTop: '16px', borderRadius: '12px' }} />
+          </div>
+        </div>
+        <div className="profile-tabs" style={{ display: 'flex', gap: '20px', padding: '20px' }}>
+          {[1,2,3].map(n => <div key={n} className="skeleton" style={{ flex: 1, height: '40px', borderRadius: '12px' }} />)}
+        </div>
+        <div className="profile-section" style={{ padding: '20px' }}>
+          {[1,2,3].map(n => <div key={n} className="skeleton" style={{ height: '80px', borderRadius: '16px', marginBottom: '12px' }} />)}
         </div>
       </div>
     );
