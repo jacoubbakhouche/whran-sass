@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { INSTITUTION_TYPES, BALADIYAS } from '../../lib/mockData';
 import MapView from '../../components/map/MapView';
-import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiUsers, FiShare2, FiChevronRight, FiChevronLeft, FiHeart } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiPhone, FiMail, FiGlobe, FiUsers, FiShare2, FiChevronRight, FiChevronLeft, FiHeart, FiClock, FiX } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 import './InstitutionProfile.css';
 
@@ -28,6 +28,7 @@ export default function InstitutionProfile() {
     const { t, locale, dir, getField } = useI18n();
     const [institution, setInstitution] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -178,6 +179,37 @@ export default function InstitutionProfile() {
                     </div>
                 </section>
                 
+                {/* Announcements */}
+                {announcements.length > 0 && (
+                    <section className="profile-section">
+                        <h2 className="section-title">
+                            {locale === 'ar' ? 'الإعلانات' : 'Annonces'}
+                        </h2>
+                        <div className="h-scroll">
+                            {announcements.map(ann => (
+                                <div 
+                                    key={ann.id} 
+                                    className="ann-item-card card"
+                                    onClick={() => setSelectedAnnouncement(ann)}
+                                >
+                                    <div className="ann-item-card__date">
+                                        <FiClock size={12} />
+                                        <span>{new Date(ann.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <h3 className="ann-item-card__title">{getField(ann, 'title')}</h3>
+                                    <p className="ann-item-card__snippet">
+                                        {getField(ann, 'content')?.substring(0, 60)}...
+                                    </p>
+                                    <span className="ann-item-card__more">
+                                        {locale === 'ar' ? 'اقرأ المزيد' : 'Lire la suite'}
+                                        {dir === 'rtl' ? <FiChevronLeft size={14} /> : <FiChevronRight size={14} />}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+                
                 {/* Services / Programs omitted if empty... */}
 
                 {/* Contact Info Grid */}
@@ -274,6 +306,28 @@ export default function InstitutionProfile() {
                     </div>
                 </section>
             </div>
+
+            {/* Announcement Modal */}
+            {selectedAnnouncement && (
+                <div className="ann-modal-overlay" onClick={() => setSelectedAnnouncement(null)}>
+                    <div className="ann-details-modal glass animate-up" onClick={e => e.stopPropagation()}>
+                        <div className="ann-details-modal__header">
+                            <span className="badge-primary">
+                                <FiClock />
+                                {new Date(selectedAnnouncement.created_at).toLocaleDateString()}
+                            </span>
+                            <button className="close-btn" onClick={() => setSelectedAnnouncement(null)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="ann-details-modal__body">
+                            <h1>{getField(selectedAnnouncement, 'title')}</h1>
+                            <div className="divider" />
+                            <p>{getField(selectedAnnouncement, 'content')}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Bottom Sticky Action */}
             <div className="profile-sticky-action">
