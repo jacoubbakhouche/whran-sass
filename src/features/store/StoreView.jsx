@@ -106,8 +106,8 @@ export default function StoreView() {
       {/* ─── Header ─── */}
       <header className="store-header-premium">
         <div className="header-top">
-          <div className="store-logo-placeholder">
-            {/* Logo will be added here later */}
+          <div className="store-logo-container">
+            <img src="/logo.png" alt="Edu Expert" className="store-logo" />
           </div>
           <div className="store-actions">
             <div className="action-circle">

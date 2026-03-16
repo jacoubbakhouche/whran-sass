@@ -21,10 +21,16 @@
   margin-bottom: 24px;
 }
 
-.store-user {
+.store-logo-container {
+  height: 48px;
   display: flex;
   align-items: center;
-  gap: 12px;
+}
+
+.store-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .avatar-premium {
