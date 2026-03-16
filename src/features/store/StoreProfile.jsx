@@ -133,9 +133,14 @@ export default function StoreProfile() {
                 <div className="store-hero">
                     <div className="store-avatar">
                         {store.avatar_url ? (
-                            <img src={supabase.storage.from('avatars').getPublicUrl(store.avatar_url).data.publicUrl} alt="" />
+                            <img 
+                                src={store.avatar_url.startsWith('http') 
+                                    ? store.avatar_url 
+                                    : supabase.storage.from('profiles').getPublicUrl(store.avatar_url).data.publicUrl} 
+                                alt="" 
+                            />
                         ) : (
-                            store.full_name?.[0] || '🏪'
+                            store.store_name?.[0] || store.full_name?.[0] || '🏪'
                         )}
                     </div>
                     <h1>{store.store_name || store.full_name}</h1>

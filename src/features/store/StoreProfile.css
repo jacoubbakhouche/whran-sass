@@ -212,7 +212,7 @@
 .btn-call-store {
     width: 50px;
     height: 50px;
-    background: #10B981; /* Green color for phone */
+    background: #6366F1; /* Changed to purple per user request */
     border: none;
     border-radius: 16px;
     display: flex;
@@ -221,13 +221,13 @@
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
 .btn-call-store:hover {
-    background: #059669;
+    background: #4F46E5;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .store-content {
