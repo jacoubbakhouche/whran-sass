@@ -65,102 +65,106 @@ export default function ProductDetail() {
         <div className="product-detail-page" dir="rtl">
             {/* Header */}
             <header className="product-detail-header">
-                <button className="icon-btn" onClick={() => navigate(-1)}>
+                <button className="icon-btn header-back" onClick={() => navigate(-1)}>
                     <FiChevronLeft size={24} />
                 </button>
                 <div className="header-actions">
-                    <button className="icon-btn"><FiHeart size={20} /></button>
-                    <button className="icon-btn"><FiMoreVertical size={20} /></button>
+                    <button className="icon-btn heart-btn"><FiHeart size={20} /></button>
+                    <div className="cart-btn-wrapper">
+                        <button className="icon-btn cart-btn" onClick={() => navigate('/cart')}>
+                            <FiShoppingBag size={20} />
+                            <span className="cart-badge">2</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            {/* Book Card Visual */}
-            <div className="product-visual-container">
-                <div className="product-card-floating">
-                    <div className="product-card-floating__inner">
-                        <div className="product-card-floating__cover">
-                            {coverUrl ? <img src={coverUrl} alt={book.name} /> : <div className="placeholder-book">📚</div>}
-                        </div>
-                        <h2 className="product-card-floating__title">{book.name}</h2>
-                        <p 
-                            className="product-card-floating__author"
-                            onClick={() => {
-                                if (book.seller_id) navigate(`/store/profile/${book.seller_id}`);
-                            }}
-                            style={{ cursor: 'pointer', color: 'var(--accent-warm)' }}
-                        >
-                            بواسطة {book.profiles?.full_name || book.author || 'الجزائر التعليمية'}
-                        </p>
-                        <div className="product-card-floating__rating">
-                            {[1, 2, 3, 4, 5].map(star => (
-                                <FiStar 
-                                    key={star} 
-                                    size={16} 
-                                    fill={star <= (book.rating_avg || 4) ? "#F59E0B" : "transparent"} 
-                                    stroke={star <= (book.rating_avg || 4) ? "#F59E0B" : "#cbd5e1"} 
+            {/* Product Image Slider Section */}
+            <div className="product-hero-carousel">
+                <div className="hero-carousel__image" style={{ transform: `translateX(${activeImageIndex * 100}%)` }}>
+                    {coverUrl ? <img src={coverUrl} alt={book.name} /> : <div className="placeholder-book">📚</div>}
+                </div>
+                
+                {/* Carousel Pagination Dots */}
+                <div className="carousel-dots">
+                    {[0, 1, 2].map(i => (
+                        <span 
+                            key={i} 
+                            className={`dot ${activeImageIndex === i ? 'active' : ''}`}
+                            onClick={() => setActiveImageIndex(i)}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Product Info - Floating Sheet Look */}
+            <div className="product-info-sheet animate-up">
+                <div className="info-sheet__header">
+                    <div className="title-price-row">
+                        <h1 className="product-title">{book.name}</h1>
+                        <div className="color-options">
+                            {['#333333', '#FDE68A', '#F9A8D4', '#E2E8F0'].map(color => (
+                                <button 
+                                    key={color}
+                                    className={`color-dot ${selectedColor === color ? 'active' : ''}`}
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => setSelectedColor(color)}
                                 />
                             ))}
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Book Info Content */}
-            <div className="product-info-content animate-up">
-                <div className="info-header">
-                    <h3>الوصف</h3>
-                    <span className="info-price">{book.discount_price || book.price} دج</span>
-                </div>
-                
-                <p className="info-description">
-                    {book.description || "كتاب قيم غني بالمعلومات والمهارات اللازمة للتفوق في المشوار الدراسي، مجمع من طرف أمهر الأساتذة في الجزائر."}
-                </p>
-
-                <div className="info-tags">
-                    {book.category_id && <span className="tag-pill">كتاب مدرسي</span>}
-                    <span className="tag-pill">رواية</span>
-                    <span className="tag-pill">جديد</span>
+                    <div className="price-tag">{book.discount_price || book.price} دج</div>
                 </div>
 
-                <div className="info-actions">
+                {/* Size Selector */}
+                <div className="selection-section">
+                    <h4 className="section-label">حجمك (Your Size)</h4>
+                    <div className="size-grid">
+                        {['S', 'M', 'L', 'XL'].map(size => (
+                            <button 
+                                key={size}
+                                className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                                onClick={() => setSelectedSize(size)}
+                            >
+                                {size}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="description-section">
+                    <h4 className="section-label">الوصف</h4>
+                    <p className="product-description">
+                        {book.description || "هذا المنتج مختار بعناية لتمثيل الجودة الرفيعة والمتانة، مناسب جداً للاستخدام اليومي والمهني."}
+                    </p>
+                </div>
+
+                {/* Sticky Action Button */}
+                <div className="product-footer-actions">
                     <button 
-                        className="btn-buy-premium"
+                        className="btn-add-to-cart-premium"
                         onClick={async () => {
-                            if (!supabase.auth.getUser()) {
-                                navigate('/login');
-                                return;
-                            }
-                            const { data: userData } = await supabase.auth.getUser();
-                            const user = userData.user;
-                            if (!user) {
-                                navigate('/login');
-                                return;
-                            }
-
-                            if (book.stock_quantity <= 0) {
-                                alert(dir === 'rtl' ? 'عذراً، هذا المنتج غير متوفر حالياً' : 'Sorry, this product is out of stock');
-                                return;
-                            }
-
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) { navigate('/login'); return; }
+                            
                             try {
                                 const { error } = await supabase
                                     .from('cart')
                                     .upsert({ 
                                         user_id: user.id, 
                                         product_id: book.id,
-                                        quantity: 1
+                                        quantity: 1,
+                                        metadata: { size: selectedSize, color: selectedColor }
                                     }, { onConflict: 'user_id, product_id' });
                                 
                                 if (error) throw error;
-                                alert(dir === 'rtl' ? 'تمت الإضافة إلى السلة بنجاح! 🛒' : 'Added to cart! 🛒');
-                                navigate('/cart');
+                                alert('تمت الإضافة إلى السلة بنجاح! 🛒');
                             } catch (err) {
-                                console.error('Error adding to cart:', err);
-                                alert(err.message);
+                                console.error('Error:', err);
                             }
                         }}
                     >
-                        {book.stock_quantity <= 0 ? 'نفذت الكمية' : 'إضافة إلى السلة'}
+                        إضافة إلى السلة (Add to Cart)
                     </button>
                 </div>
             </div>
