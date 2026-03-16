@@ -56,7 +56,7 @@ export default function AIChat() {
             User Profile: ${profile ? JSON.stringify(profile) : 'Anonymous'}.
             Always respond in Arabic unless asked otherwise. Be professional, encouraging, and informative.`;
 
-            const { data, error } = await supabase.functions.invoke('ai-chat', {
+            const { data, error: funcError } = await supabase.functions.invoke('ai-chat', {
                 body: {
                     messages: [
                         { role: 'system', content: systemPrompt },
@@ -66,7 +66,12 @@ export default function AIChat() {
                 }
             });
 
-            if (error) throw error;
+            if (funcError) throw funcError;
+            
+            if (!data || !data.choices || !data.choices[0]) {
+                console.error('Invalid response structure:', data);
+                throw new Error(data?.error || 'استجابة غير صالحة من المساعد الذكي');
+            }
 
             const aiMessage = { 
                 role: 'assistant', 
@@ -75,12 +80,13 @@ export default function AIChat() {
             setMessages(prev => [...prev, aiMessage]);
         } catch (error) {
             console.error('AI Chat Error:', error);
-            setMessages(prev => [...prev, { 
+            const errorMessage = { 
                 role: 'assistant', 
-                content: 'عذراً، حدث خطأ أثناء الاتصال بالمساعد الذكي. يرجى المحاولة مرة أخرى لاحقاً.' 
-            }]);
+                content: `عذراً، حدث خطأ أثناء الاتصال بالمساعد الذكي: ${error.message || 'خطأ غير معروف'}. يرجى المحاولة مرة أخرى لاحقاً.` 
+            };
+            setMessages(prev => [...prev, errorMessage]);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
