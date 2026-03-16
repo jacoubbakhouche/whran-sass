@@ -23,7 +23,7 @@ export default function ProductDetail() {
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .select('*, profiles(id, full_name, avatar_url)')
+                    .select('*, profiles(id, full_name, store_name, avatar_url)')
                     .eq('id', id)
                     .single();
                 
@@ -131,13 +131,18 @@ export default function ProductDetail() {
                         <div className="vendor-info-mini">
                             <div className="vendor-avatar-mini">
                                 {book.profiles.avatar_url ? (
-                                    <img src={supabase.storage.from('avatars').getPublicUrl(book.profiles.avatar_url).data.publicUrl} alt="" />
+                                    <img 
+                                        src={book.profiles.avatar_url.startsWith('http') 
+                                            ? book.profiles.avatar_url 
+                                            : supabase.storage.from('profiles').getPublicUrl(book.profiles.avatar_url).data.publicUrl} 
+                                        alt="" 
+                                    />
                                 ) : (
                                     <span>🏪</span>
                                 )}
                             </div>
                             <div className="vendor-text-mini">
-                                <span className="vendor-name-mini">{book.profiles.full_name}</span>
+                                <span className="vendor-name-mini">{book.profiles.store_name || book.profiles.full_name}</span>
                                 <span className="vendor-label-mini">متجر موثوق</span>
                             </div>
                         </div>

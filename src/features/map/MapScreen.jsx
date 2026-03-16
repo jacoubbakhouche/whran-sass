@@ -26,6 +26,7 @@ const TYPE_COLORS = {
   'مركز لغات':   '#E07A3A',
   'تكوين مهني':  '#B7950B',
   'متجر':        '#6366F1',
+  'مكتبة':       '#8B4513',
 };
 
 function getTypeColor(type) {
@@ -57,7 +58,7 @@ const INSTITUTION_TYPES = [
   { label: 'جامعات', value: 'university' },
   { label: 'تدريب / لغات', value: 'training' },
   { label: 'تكوين مهني', value: 'vocational' },
-  { label: 'متاجر', value: 'store' },
+  { label: 'متاجر / مكتبات', value: 'store' },
 ];
 
 function typeMatches(instType, filterValue) {
@@ -68,7 +69,7 @@ function typeMatches(instType, filterValue) {
     university:['جامعة', 'جامعة خاصة'],
     training:  ['مركز تدريب', 'مركز لغات'],
     vocational:['تكوين مهني'],
-    store:     ['متجر'],
+    store:     ['متجر', 'مكتبة'],
   };
   return (m[filterValue] || []).some(k => instType?.includes(k));
 }
@@ -112,19 +113,25 @@ export default function MapScreen() {
         lng: i.location?.coordinates ? i.location.coordinates[0] : null,
         type: i.type,
         logo: i.logo_url,
-        bucket: 'profiles'
-      }));
+        bucket: 'profiles',
+        category: 'institution'
+      })).filter(i => i.lat && i.lng);
 
-      const normalizedStores = (stores || []).map(s => ({
-        ...s,
-        name: s.store_name || s.full_name,
-        name_ar: s.store_name || s.full_name, // Copy to name_ar for filtering
-        lat: typeof s.lat === 'string' ? parseFloat(s.lat) : s.lat,
-        lng: typeof s.lng === 'string' ? parseFloat(s.lng) : s.lng,
-        type: 'متجر',
-        logo: s.avatar_url,
-        bucket: 'profiles'
-      })).filter(s => s.lat && s.lng); // Only show stores with coordinates
+      const normalizedStores = (stores || []).map(s => {
+        const name = s.store_name || s.full_name;
+        const isLibrary = name?.includes('مكتبة') || name?.toLowerCase().includes('library') || name?.toLowerCase().includes('librairie');
+        return {
+          ...s,
+          name: name,
+          name_ar: name,
+          lat: typeof s.lat === 'string' ? parseFloat(s.lat) : s.lat,
+          lng: typeof s.lng === 'string' ? parseFloat(s.lng) : s.lng,
+          type: isLibrary ? 'مكتبة' : 'متجر',
+          logo: s.avatar_url,
+          bucket: 'profiles',
+          category: 'vendor'
+        };
+      }).filter(s => s.lat && s.lng);
 
       setInstitutions([...normalizedInsts, ...normalizedStores]);
     };
@@ -239,7 +246,7 @@ export default function MapScreen() {
 
       {/* ─── Count Badge ─── */}
       <div className="map-count-badge">
-        {filtered.length} مؤسسة
+        {filtered.length} نتيجة متوفرة
       </div>
 
       {/* ─── Bottom Sheet ─── */}
@@ -287,7 +294,7 @@ export default function MapScreen() {
                 <button
                   className="btn-primary"
                   style={{ flex: 1 }}
-                  onClick={() => navigate(`/institution/${selected.id}`)}
+                  onClick={() => navigate(selected.category === 'vendor' ? `/store/profile/${selected.id}` : `/institution/${selected.id}`)}
                 >
                   عرض التفاصيل
                 </button>
