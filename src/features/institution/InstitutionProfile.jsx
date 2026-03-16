@@ -171,7 +171,7 @@ export default function InstitutionProfile() {
                     </h2>
                     <p className="section-text">{institution.description}</p>
                     
-                    <div className="profile-features-grid" style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
+                    <div className="profile-features-grid">
                         {institution.has_transport && <span className="tag-outline">🚍 {locale === 'ar' ? 'نقل مدرسي' : 'Transport'}</span>}
                         {institution.has_canteen && <span className="tag-outline">🍱 {locale === 'ar' ? 'مطعم' : 'Cantine'}</span>}
                         {institution.is_private && <span className="tag-outline">💎 {locale === 'ar' ? 'خاصة' : 'Privé'}</span>}
