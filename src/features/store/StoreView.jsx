@@ -7,11 +7,20 @@ import './StoreView.css';
 
 function BookCard({ product, layout = 'vertical' }) {
   const navigate = useNavigate();
+  const getStoreAvatar = (profile) => {
+    if (!profile || !profile.avatar_url) return null;
+    return profile.avatar_url.startsWith('http') 
+      ? profile.avatar_url 
+      : supabase.storage.from('profiles').getPublicUrl(profile.avatar_url).data.publicUrl;
+  };
+
   const coverUrl = product.cover_url
     ? (product.cover_url.startsWith('http') || product.cover_url.startsWith('/mockups/') 
         ? product.cover_url 
         : supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl)
     : null;
+
+  const storeAvatar = getStoreAvatar(product.profiles);
 
   return (
     <div 
@@ -31,7 +40,10 @@ function BookCard({ product, layout = 'vertical' }) {
       <div className="store-book-card__info">
         <h4 className="store-book-card__title">{product.name}</h4>
         <p className="store-book-card__author">
-            {product.profiles?.full_name || product.author || 'الجزائر التعليمية'}
+            <span className="sc-avatar-mini">
+                {storeAvatar ? <img src={storeAvatar} alt="" /> : '🏪'}
+            </span>
+            {product.profiles?.store_name || product.profiles?.full_name || product.author || 'الجزائر التعليمية'}
         </p>
         <div className="store-book-card__footer">
             <span className="store-book-card__price">{product.price} دج</span>
@@ -48,6 +60,7 @@ export default function StoreView() {
   const [myLibrary, setMyLibrary] = useState([]);
   const [selectedTag, setSelectedTag] = useState('Popular');
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
 
   // Tags for the sidebar
   const tags = [
@@ -59,15 +72,25 @@ export default function StoreView() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+          const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', user.id)
+              .single();
+          if (profile) setUserProfile(profile);
+      }
+
       const { data: allProds } = await supabase
         .from('products')
-        .select('*, profiles(full_name)')
+        .select('*, profiles(full_name, store_name, avatar_url)')
         .eq('status', 'active')
         .limit(20);
       
       if (allProds) {
         setProducts(allProds);
-        // Simulate "My Library" with a few items
         setMyLibrary(allProds.slice(0, 5));
       } else {
         setProducts([]);
@@ -83,12 +106,8 @@ export default function StoreView() {
       {/* ─── Header ─── */}
       <header className="store-header-premium">
         <div className="header-top">
-          <div className="store-user">
-            <img src="/placeholder-user.jpg" alt="user" className="avatar-premium" />
-            <div className="user-welcome">
-              <span>أهلاً بك،</span>
-              <strong>مستكشف المعرفة</strong>
-            </div>
+          <div className="store-logo-placeholder">
+            {/* Logo will be added here later */}
           </div>
           <div className="store-actions">
             <div className="action-circle">

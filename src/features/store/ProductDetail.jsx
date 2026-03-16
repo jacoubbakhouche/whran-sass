@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar, FiShoppingBag } from 'react-icons/fi';
+import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar, FiShoppingBag, FiX, FiMessageSquare } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 
 import './ProductDetail.css';
@@ -13,6 +13,9 @@ export default function ProductDetail() {
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+    const [messageContent, setMessageContent] = useState('');
+    const [sendingMessage, setSendingMessage] = useState(false);
     
     useEffect(() => {
         const fetchProduct = async () => {
@@ -55,11 +58,18 @@ export default function ProductDetail() {
         );
     }
 
-    const coverUrl = book.cover_url
-        ? (book.cover_url.startsWith('http') || book.cover_url.startsWith('/mockups/') 
-            ? book.cover_url 
-            : supabase.storage.from('product-covers').getPublicUrl(book.cover_url).data.publicUrl)
-        : null;
+    const getProductImage = (url) => {
+        if (!url) return null;
+        return (url.startsWith('http') || url.startsWith('/mockups/'))
+            ? url
+            : supabase.storage.from('product-covers').getPublicUrl(url).data.publicUrl;
+    };
+
+    const productImages = [
+        book.cover_url,
+        book.image_url_2,
+        book.image_url_3
+    ].filter(Boolean).map(url => getProductImage(url));
 
     return (
         <div className="product-detail-page" dir="rtl">
@@ -82,12 +92,18 @@ export default function ProductDetail() {
             {/* Product Image Slider Section */}
             <div className="product-hero-carousel">
                 <div className="hero-carousel__image" style={{ transform: `translateX(${activeImageIndex * 100}%)` }}>
-                    {coverUrl ? <img src={coverUrl} alt={book.name} /> : <div className="placeholder-book">📚</div>}
+                    {productImages.length > 0 ? (
+                        productImages.map((src, idx) => (
+                            <img key={idx} src={src} alt={book.name} style={{ right: `${idx * 100}%`, position: idx === 0 ? 'relative' : 'absolute' }} />
+                        ))
+                    ) : (
+                        <div className="placeholder-book">📚</div>
+                    )}
                 </div>
                 
                 {/* Carousel Pagination Dots */}
                 <div className="carousel-dots">
-                    {[0, 1, 2].map(i => (
+                    {productImages.map((_, i) => (
                         <span 
                             key={i} 
                             className={`dot ${activeImageIndex === i ? 'active' : ''}`}
@@ -205,10 +221,63 @@ export default function ProductDetail() {
                     >
                         شراء الآن
                     </button>
-                    <button className="btn-contact-seller">
+                    <button className="btn-contact-seller" onClick={() => setIsMessageModalOpen(true)}>
                         تواصل مع البائع
                     </button>
                 </div>
+
+                {/* Message Modal */}
+                {isMessageModalOpen && (
+                    <div className="modal-overlay" onClick={() => setIsMessageModalOpen(false)}>
+                        <div className="message-modal glass animate-up" onClick={e => e.stopPropagation()}>
+                            <div className="message-modal__header">
+                                <h3>تواصل مع المتجر</h3>
+                                <button className="close-btn" onClick={() => setIsMessageModalOpen(false)}>
+                                    <FiX />
+                                </button>
+                            </div>
+                            <form className="message-modal__body" onSubmit={async (e) => {
+                                e.preventDefault();
+                                const { data: { user } } = await supabase.auth.getUser();
+                                if (!user) { navigate('/login'); return; }
+                                
+                                setSendingMessage(true);
+                                try {
+                                    const { error } = await supabase
+                                        .from('institution_messages') 
+                                        .insert([{
+                                            institution_id: book.seller_id,
+                                            sender_id: user.id,
+                                            sender_name: user.user_metadata?.full_name || user.email,
+                                            subject: `استفسار عن: ${book.name}`,
+                                            content: messageContent,
+                                            type: 'store_query'
+                                        }]);
+                                    
+                                    if (error) throw error;
+                                    alert('تم إرسال رسالتك بنجاح!');
+                                    setIsMessageModalOpen(false);
+                                    setMessageContent('');
+                                } catch (err) {
+                                    alert(err.message);
+                                } finally {
+                                    setSendingMessage(false);
+                                }
+                            }}>
+                                <p className="recipient-label">إلى: <strong>{book.profiles.store_name || book.profiles.full_name}</strong></p>
+                                <textarea 
+                                    placeholder="اكتب استفسارك هنا..."
+                                    value={messageContent}
+                                    onChange={e => setMessageContent(e.target.value)}
+                                    required
+                                />
+                                <button type="submit" className="btn-send-message" disabled={sendingMessage}>
+                                    {sendingMessage ? '...' : 'إرسال الرسالة'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
