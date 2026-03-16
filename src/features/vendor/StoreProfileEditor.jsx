@@ -2,9 +2,29 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { FiCamera, FiSave, FiUser, FiInfo, FiMapPin, FiPhone } from 'react-icons/fi';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import './StoreProfileEditor.css';
+
+// Fix Leaflet icon issue
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+function MapUpdater({ center }) {
+    const map = useMap();
+    useEffect(() => {
+        if (center[0] && center[1]) {
+            map.setView(center, map.getZoom());
+        }
+    }, [center, map]);
+    return null;
+}
 
 export default function StoreProfileEditor() {
     const { t, locale, dir } = useI18n();
@@ -266,6 +286,35 @@ export default function StoreProfileEditor() {
                             <FiMapPin />
                             {geolocating ? (locale === 'ar' ? 'جاري التحديد...' : 'Localisation...') : (locale === 'ar' ? 'تحديد موقعي الحالي (GPS)' : 'Ma position actuelle')}
                         </button>
+                    </div>
+
+                    {/* Map Preview */}
+                    <div className="spe-map-preview-wrapper spe-full">
+                        <div className="spe-map-container">
+                            <MapContainer 
+                                center={[formData.lat || 36.737, formData.lng || 3.086]} 
+                                zoom={13} 
+                                style={{ height: '100%', width: '100%' }}
+                                scrollWheelZoom={false}
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; OpenStreetMap'
+                                />
+                                {formData.lat && formData.lng && (
+                                    <>
+                                        <Marker position={[parseFloat(formData.lat), parseFloat(formData.lng)]} />
+                                        <MapUpdater center={[parseFloat(formData.lat), parseFloat(formData.lng)]} />
+                                    </>
+                                )}
+                            </MapContainer>
+                            {(!formData.lat || !formData.lng) && (
+                                <div className="map-overlay-hint">
+                                    <FiMapPin size={24} />
+                                    <p>{locale === 'ar' ? 'قم بتحديد الموقع ليظهر على الخريطة' : 'Localisez pour afficher sur la carte'}</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
