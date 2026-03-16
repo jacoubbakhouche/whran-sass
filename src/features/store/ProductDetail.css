@@ -110,7 +110,7 @@
 
 .dot.active {
   width: 20px;
-  background: #333333;
+  background: #7C3AED;
   border-radius: 4px;
 }
 
@@ -161,7 +161,7 @@
 }
 
 .color-dot.active {
-  border: 2px solid #333;
+  border: 2px solid #7C3AED;
   transform: scale(1.2);
 }
 
@@ -208,10 +208,9 @@
 }
 
 .size-btn.active {
-  background: #F9A8D4; /* Mockup uses pink for selected size in some cases? No, let's use black as main theme */
-  border-color: #333;
+  background: #7C3AED;
+  border-color: #7C3AED;
   color: #fff;
-  background: #333;
 }
 
 .description-section {
@@ -236,7 +235,7 @@
 .btn-add-to-cart-premium {
   width: 100%;
   padding: 20px;
-  background: #333333;
+  background: #7C3AED;
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -244,12 +243,12 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
 }
 
 .btn-add-to-cart-premium:hover {
   transform: translateY(-4px);
-  background: #000;
+  background: #6D28D9;
 }
 
 /* RTL Adjustments */

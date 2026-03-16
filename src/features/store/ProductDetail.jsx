@@ -10,8 +10,8 @@ export default function ProductDetail() {
     const navigate = useNavigate();
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedSize, setSelectedSize] = useState('M');
-    const [selectedColor, setSelectedColor] = useState('#333333');
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedColor, setSelectedColor] = useState(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     
     useEffect(() => {
@@ -102,35 +102,39 @@ export default function ProductDetail() {
                 <div className="info-sheet__header">
                     <div className="title-price-row">
                         <h1 className="product-title">{book.name}</h1>
-                        <div className="color-options">
-                            {['#333333', '#FDE68A', '#F9A8D4', '#E2E8F0'].map(color => (
-                                <button 
-                                    key={color}
-                                    className={`color-dot ${selectedColor === color ? 'active' : ''}`}
-                                    style={{ backgroundColor: color }}
-                                    onClick={() => setSelectedColor(color)}
-                                />
-                            ))}
-                        </div>
+                        {book.colors && book.colors.length > 0 && (
+                            <div className="color-options">
+                                {book.colors.map(color => (
+                                    <button 
+                                        key={color}
+                                        className={`color-dot ${selectedColor === color ? 'active' : ''}`}
+                                        style={{ backgroundColor: color }}
+                                        onClick={() => setSelectedColor(color)}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="price-tag">{book.discount_price || book.price} دج</div>
                 </div>
 
                 {/* Size Selector */}
-                <div className="selection-section">
-                    <h4 className="section-label">حجمك (Your Size)</h4>
-                    <div className="size-grid">
-                        {['S', 'M', 'L', 'XL'].map(size => (
-                            <button 
-                                key={size}
-                                className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                                onClick={() => setSelectedSize(size)}
-                            >
-                                {size}
-                            </button>
-                        ))}
+                {book.sizes && book.sizes.length > 0 && (
+                    <div className="selection-section">
+                        <h4 className="section-label">حجمك (Your Size)</h4>
+                        <div className="size-grid">
+                            {book.sizes.map(size => (
+                                <button 
+                                    key={size}
+                                    className={`size-btn ${selectedSize === size ? 'active' : ''}`}
+                                    onClick={() => setSelectedSize(size)}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="description-section">
                     <h4 className="section-label">الوصف</h4>
@@ -154,7 +158,10 @@ export default function ProductDetail() {
                                         user_id: user.id, 
                                         product_id: book.id,
                                         quantity: 1,
-                                        metadata: { size: selectedSize, color: selectedColor }
+                                        metadata: { 
+                                            ...(selectedSize && { size: selectedSize }), 
+                                            ...(selectedColor && { color: selectedColor }) 
+                                        }
                                     }, { onConflict: 'user_id, product_id' });
                                 
                                 if (error) throw error;

@@ -16,8 +16,9 @@ function BookCard({ product, layout = 'vertical' }) {
   return (
     <div 
       className={`store-book-card ${layout}`} 
+      onClick={() => navigate(`/store/book/${product.id}`)}
     >
-      <div className="store-book-card__cover" onClick={() => navigate(`/store/book/${product.id}`)}>
+      <div className="store-book-card__cover">
         {coverUrl ? (
           <img src={coverUrl} alt={product.name} />
         ) : (
@@ -25,21 +26,16 @@ function BookCard({ product, layout = 'vertical' }) {
             <span>{product.name?.[0] || 'B'}</span>
           </div>
         )}
+        <div className="card-badge">جديد</div>
       </div>
       <div className="store-book-card__info">
-        <h4 className="store-book-card__title" onClick={() => navigate(`/store/book/${product.id}`)}>{product.name}</h4>
-        <div className="store-book-card__meta">
-            <p 
-                className="store-book-card__author" 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (product.seller_id) navigate(`/store/profile/${product.seller_id}`);
-                }}
-                style={{ cursor: 'pointer', color: 'var(--accent-warm)' }}
-            >
-                {product.profiles?.full_name || product.author || 'الجزائر التعليمية'}
-            </p>
+        <h4 className="store-book-card__title">{product.name}</h4>
+        <p className="store-book-card__author">
+            {product.profiles?.full_name || product.author || 'الجزائر التعليمية'}
+        </p>
+        <div className="store-book-card__footer">
             <span className="store-book-card__price">{product.price} دج</span>
+            <button className="add-mini-btn">+</button>
         </div>
       </div>
     </div>
@@ -85,61 +81,66 @@ export default function StoreView() {
   return (
     <div className="store-page" dir="rtl">
       {/* ─── Header ─── */}
-      <header className="store-header">
-        <div className="store-header__user">
-          <img src="/placeholder-user.jpg" alt="user" className="avatar-small" />
+      <header className="store-header-premium">
+        <div className="header-top">
+          <div className="store-user">
+            <img src="/placeholder-user.jpg" alt="user" className="avatar-premium" />
+            <div className="user-welcome">
+              <span>أهلاً بك،</span>
+              <strong>مستكشف المعرفة</strong>
+            </div>
+          </div>
+          <div className="store-actions">
+            <div className="action-circle">
+              <FiSearch size={20} />
+            </div>
+            <div className="action-circle badge-parent" onClick={() => navigate('/cart')}>
+              <FiShoppingBag size={20} />
+              <span className="cart-dot"></span>
+            </div>
+          </div>
         </div>
-        <div className="store-header__actions">
-          <FiSearch size={22} className="action-icon" />
-          <FiShoppingBag 
-            size={22} 
-            className="action-icon" 
-            onClick={() => navigate('/cart')} 
-            style={{ cursor: 'pointer' }}
-          />
+        
+        <div className="search-bar-premium">
+          <FiSearch className="search-icon" />
+          <input type="text" placeholder="ابحث عن كتب، أدوات، أو مذكرات..." />
         </div>
       </header>
 
-      {/* ─── My Library ─── */}
+      {/* ─── Featured Categories ─── */}
       <section className="store-section">
-        <div className="section-header">
+        <div className="section-header-premium">
           <h2>المتجر</h2>
-          <button className="view-all">مشاهدة الكل 〉</button>
+          <button className="text-btn">عرض الكل</button>
         </div>
-        <div className="h-scroll library-scroll">
+        <div className="h-scroll items-scroll">
           {myLibrary.map(item => (
             <BookCard key={item.id} product={item} layout="vertical" />
           ))}
         </div>
       </section>
 
-      {/* ─── Bestsellers with Sidebar ─── */}
-      <section className="store-section bestseller-section">
-        <div className="section-header">
+      {/* ─── Trending / Bestsellers ─── */}
+      <section className="store-section bestseller-premium">
+        <div className="section-header-premium">
           <h2>الأكثر مبيعاً</h2>
-          <button className="view-all">المزيد 〉</button>
-        </div>
-        
-        <div className="bestseller-container">
-          {/* Vertical Sidebar */}
-          <div className="bestseller-sidebar">
+          <div className="filter-tabs">
             {tags.map(tag => (
               <button 
                 key={tag.id}
-                className={`sidebar-tag ${selectedTag === tag.id ? 'active' : ''}`}
+                className={`filter-tab ${selectedTag === tag.id ? 'active' : ''}`}
                 onClick={() => setSelectedTag(tag.id)}
               >
                 {tag.label}
               </button>
             ))}
           </div>
-
-          {/* Grid/List of Bestsellers */}
-          <div className="bestseller-list">
-            {products.slice(0, 6).map(item => (
-              <BookCard key={item.id} product={item} layout="compact" />
-            ))}
-          </div>
+        </div>
+        
+        <div className="bestseller-grid">
+          {products.slice(0, 6).map(item => (
+            <BookCard key={item.id} product={item} layout="compact" />
+          ))}
         </div>
       </section>
     </div>

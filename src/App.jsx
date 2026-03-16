@@ -1,5 +1,5 @@
 import { useState, useEffect, Component } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import BottomNav from './components/layout/BottomNav';
@@ -156,6 +156,15 @@ class ErrorBoundary extends Component {
   }
 }
 
+function NavWrapper() {
+  const { pathname } = useLocation();
+  const hideOn = ['/store/book/', '/cart', '/institution/'];
+  const shouldHide = hideOn.some(path => pathname.startsWith(path));
+
+  if (shouldHide) return null;
+  return <BottomNav />;
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -164,7 +173,7 @@ export default function App() {
           <BrowserRouter>
             <div dir="rtl">
               <AppContent />
-              <BottomNav />
+              <NavWrapper />
             </div>
           </BrowserRouter>
         </I18nProvider>
