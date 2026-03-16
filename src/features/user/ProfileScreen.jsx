@@ -39,7 +39,7 @@ export default function ProfileScreen() {
         setUser(u);
 
         const [profRes, favRes, ordRes] = await Promise.all([
-          supabase.from('profiles').select('full_name, phone, avatar_url, role, wilaya, commune, is_active').eq('id', u.id).single(),
+          supabase.from('profiles').select('*').eq('id', u.id).single(),
           supabase.from('favorites').select('institutions(id, name_ar, logo_url, type, rating_avg)').eq('user_id', u.id),
           supabase.from('orders').select('id, status, total_amount, created_at').eq('user_id', u.id).order('created_at', { ascending: false }).limit(10)
         ]);
