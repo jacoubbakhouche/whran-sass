@@ -95,7 +95,7 @@ export default function VendorMessages() {
     );
 
     return (
-        <div className="vendor-msgs" dir={dir}>
+        <div className={`vendor-msgs ${selectedMsg ? 'has-selected' : ''}`} dir={dir}>
             <div className="vendor-msgs__sidebar">
                 <header className="sidebar-header">
                     <h1>{locale === 'ar' ? 'الرسائل' : 'Messages'}</h1>

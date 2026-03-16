@@ -276,9 +276,17 @@
 @media (max-width: 900px) {
     .vendor-msgs__sidebar {
         width: 100%;
-        display: ${({ selected }) => selected ? 'none' : 'flex'};
     }
-    .vendor-msgs__chat {
-        display: ${({ selected }) => selected ? 'flex' : 'none'};
+    
+    .vendor-msgs.has-selected .vendor-msgs__sidebar {
+        display: none;
+    }
+    
+    .vendor-msgs:not(.has-selected) .vendor-msgs__chat {
+        display: none;
+    }
+
+    .vendor-msgs.has-selected .vendor-msgs__chat {
+        display: flex;
     }
 }
