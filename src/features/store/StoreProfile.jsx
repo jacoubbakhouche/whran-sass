@@ -13,7 +13,8 @@ import {
     FiPhone, 
     FiInfo, 
     FiPlusCircle, 
-    FiX 
+    FiX,
+    FiMap
 } from 'react-icons/fi';
 import './StoreProfile.css';
 
@@ -150,7 +151,23 @@ export default function StoreProfile() {
                     <button className="back-btn" onClick={() => navigate(-1)}>
                         <FiArrowRight size={24} />
                     </button>
-                    <FiShoppingBag size={22} onClick={() => navigate('/cart')} style={{ cursor: 'pointer' }} />
+                    <div className="header-actions-right">
+                        {store.lat && store.lng && (
+                            <button 
+                                className="nav-icon-btn" 
+                                onClick={() => navigate('/map', { 
+                                    state: { 
+                                        focusCoords: [store.lat, store.lng],
+                                        selectedId: store.id
+                                    } 
+                                })}
+                                title={locale === 'ar' ? 'عرض على الخريطة' : 'Voir sur la carte'}
+                            >
+                                <FiMap size={22} />
+                            </button>
+                        )}
+                        <FiShoppingBag size={22} onClick={() => navigate('/cart')} style={{ cursor: 'pointer' }} />
+                    </div>
                 </div>
 
                 <div className="store-hero">
@@ -235,27 +252,6 @@ export default function StoreProfile() {
                     </div>
                 )}
 
-                {/* Map Location Section */}
-                {store.lat && store.lng && (
-                    <div className="store-map-section">
-                        <h2 className="section-title">
-                            <FiMapPin className="title-icon" />
-                            <span>{locale === 'ar' ? 'موقعنا على الخريطة' : 'Notre emplacement'}</span>
-                        </h2>
-                        <div className="store-map-container">
-                            <MapContainer 
-                                center={[store.lat, store.lng]} 
-                                zoom={15} 
-                                style={{ height: '100%', width: '100%' }}
-                                scrollWheelZoom={false}
-                            >
-                                <TileLayer
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    attribution='&copy; OpenStreetMap'
-                                />
-                                <Marker position={[store.lat, store.lng]} />
-                            </MapContainer>
-                        </div>
                     </div>
                 )}
 

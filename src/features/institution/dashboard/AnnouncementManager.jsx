@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
 import { FiPlus, FiEdit2, FiTrash2, FiClock, FiCheckCircle, FiX } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
+import Skeleton from '../../../components/ui/Skeleton';
 import './AnnouncementManager.css';
 
 export default function AnnouncementManager() {
@@ -139,9 +140,16 @@ export default function AnnouncementManager() {
 
             <div className="announcement-list">
                 {loading ? (
-                    <p style={{ textAlign: 'center', padding: '40px' }}>
-                        {locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}
-                    </p>
+                    [1, 2, 3].map(i => (
+                        <div key={i} className="ann-card">
+                            <div className="ann-card__content">
+                                <Skeleton width="80px" height="20px" style={{ marginBottom: '12px' }} />
+                                <Skeleton width="60%" height="24px" style={{ marginBottom: '12px' }} />
+                                <Skeleton width="90%" height="14px" />
+                                <Skeleton width="40%" height="14px" style={{ marginTop: '8px' }} />
+                            </div>
+                        </div>
+                    ))
                 ) : announcements.length === 0 ? (
                     <p style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>
                         {locale === 'ar' ? 'لا توجد إعلانات حالياً' : 'Aucune annonce'}

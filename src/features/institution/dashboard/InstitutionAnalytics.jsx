@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
 import { FiUsers, FiEye, FiMessageSquare, FiTrendingUp } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
+import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionAnalytics.css';
 
 export default function InstitutionAnalytics() {
@@ -58,28 +59,28 @@ export default function InstitutionAnalytics() {
         {
             title: locale === 'ar' ? 'الزيارات الكلية' : 'Visites totales',
             // Default 0 if loading, else format number
-            value: loading ? '...' : statsData.totalViews.toLocaleString(),
+            value: loading ? <Skeleton width="60px" height="28px" /> : statsData.totalViews.toLocaleString(),
             trend: '+12%',
             trendUp: true,
             icon: <FiEye />
         },
         {
             title: locale === 'ar' ? 'الإعلانات المنشورة' : 'Annonces publiées',
-            value: loading ? '...' : statsData.totalAnnouncements,
+            value: loading ? <Skeleton width="40px" height="28px" /> : statsData.totalAnnouncements,
             trend: '+5%',
             trendUp: true,
             icon: <FiUsers /> // Keeping icon name but changing meaning for now
         },
         {
             title: locale === 'ar' ? 'الرسائل الجديدة' : 'Nouveaux messages',
-            value: loading ? '...' : statsData.totalMessages,
+            value: loading ? <Skeleton width="40px" height="28px" /> : statsData.totalMessages,
             trend: statsData.totalMessages > 0 ? '+100%' : '0%',
             trendUp: statsData.totalMessages > 0,
             icon: <FiMessageSquare />
         },
         {
             title: locale === 'ar' ? 'معدل التفاعل' : 'Taux d\'engagement',
-            value: loading ? '...' : `${statsData.engagementRate}%`,
+            value: loading ? <Skeleton width="50px" height="28px" /> : `${statsData.engagementRate}%`,
             trend: '+8%',
             trendUp: true,
             icon: <FiTrendingUp />
@@ -122,23 +123,35 @@ export default function InstitutionAnalytics() {
             <div className="charts-grid">
                 <div className="chart-card chart-large">
                     <h3>{locale === 'ar' ? 'زيارات الصفحة خلال الشهر' : 'Visites de la page ce mois-ci'}</h3>
-                    <div className="chart-placeholder">
-                        {/* Mock Bar Chart Area */}
-                        <div className="mock-bar" style={{height: '30%'}}><span>1</span></div>
-                        <div className="mock-bar" style={{height: '50%'}}><span>5</span></div>
-                        <div className="mock-bar" style={{height: '40%'}}><span>10</span></div>
-                        <div className="mock-bar" style={{height: '80%'}}><span>15</span></div>
-                        <div className="mock-bar" style={{height: '60%'}}><span>20</span></div>
-                        <div className="mock-bar" style={{height: '90%'}}><span>25</span></div>
-                        <div className="mock-bar" style={{height: '100%'}}><span>30</span></div>
-                    </div>
+                    {loading ? (
+                        <div style={{ height: '220px' }}>
+                            <Skeleton width="100%" height="100%" />
+                        </div>
+                    ) : (
+                        <div className="chart-placeholder">
+                            {/* Mock Bar Chart Area */}
+                            <div className="mock-bar" style={{height: '30%'}}><span>1</span></div>
+                            <div className="mock-bar" style={{height: '50%'}}><span>5</span></div>
+                            <div className="mock-bar" style={{height: '40%'}}><span>10</span></div>
+                            <div className="mock-bar" style={{height: '80%'}}><span>15</span></div>
+                            <div className="mock-bar" style={{height: '60%'}}><span>20</span></div>
+                            <div className="mock-bar" style={{height: '90%'}}><span>25</span></div>
+                            <div className="mock-bar" style={{height: '100%'}}><span>30</span></div>
+                        </div>
+                    )}
                 </div>
                 
                 <div className="chart-card chart-small">
                     <h3>{locale === 'ar' ? 'مصادر الزيارات' : 'Sources de trafic'}</h3>
-                    <div className="pie-chart-placeholder">
-                        <div className="mock-pie"></div>
-                    </div>
+                    {loading ? (
+                        <div style={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Skeleton variant="circle" width="150px" height="150px" />
+                        </div>
+                    ) : (
+                        <div className="pie-chart-placeholder">
+                            <div className="mock-pie"></div>
+                        </div>
+                    )}
                     <div className="pie-legend">
                         <div className="legend-item">
                             <span className="dot dot-1"></span>

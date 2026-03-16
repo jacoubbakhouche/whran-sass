@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
 import { FiSend, FiSearch, FiMessageSquare } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
+import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionMessages.css';
 
 export default function InstitutionMessages() {
@@ -135,9 +136,19 @@ export default function InstitutionMessages() {
 
                     <div className="message-list">
                         {loading ? (
-                            <div className="loading-dots">
-                                <span></span><span></span><span></span>
-                            </div>
+                            [1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="message-item">
+                                    <Skeleton variant="circle" width="48px" height="48px" />
+                                    <div className="message-info" style={{ flex: 1 }}>
+                                        <div className="message-info-top" style={{ marginBottom: '8px' }}>
+                                            <Skeleton width="100px" height="16px" />
+                                            <Skeleton width="40px" height="12px" />
+                                        </div>
+                                        <Skeleton width="150px" height="14px" style={{ marginBottom: '6px' }} />
+                                        <Skeleton width="100%" height="12px" />
+                                    </div>
+                                </div>
+                            ))
                         ) : filteredMessages.map(msg => (
                             <div 
                                 key={msg.id} 

@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { supabase } from '../../lib/supabase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './MapScreen.css';
 
 // Fix default marker icons
@@ -84,11 +84,13 @@ function FlyToLocation({ coords }) {
 
 export default function MapScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [institutions, setInstitutions] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [selected, setSelected]   = useState(null);
   const [userCoords, setUserCoords] = useState(null);
+  const [focusCoords, setFocusCoords] = useState(null);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [route, setRoute] = useState(null);
 
@@ -139,6 +141,22 @@ export default function MapScreen() {
     fetchData();
   }, []);
 
+  // Handle incoming focus request from navigation state
+  useEffect(() => {
+    if (location.state?.focusCoords && institutions.length > 0) {
+      const { focusCoords, selectedId } = location.state;
+      setFocusCoords(focusCoords);
+      
+      if (selectedId) {
+        const store = institutions.find(i => i.id === selectedId);
+        if (store) {
+          setSelected(store);
+          setSheetVisible(true);
+        }
+      }
+    }
+  }, [location.state, institutions]);
+
   const filtered = institutions.filter(inst => {
     const matchSearch = !searchText || 
                        (inst.name_ar?.toLowerCase().includes(searchText.toLowerCase())) ||
@@ -188,6 +206,7 @@ export default function MapScreen() {
           attribution='&copy; OpenStreetMap'
         />
         {userCoords && <FlyToLocation coords={userCoords} />}
+        {focusCoords && <FlyToLocation coords={focusCoords} zoom={16} />}
         {route && (
           <L.Polyline 
             positions={route} 

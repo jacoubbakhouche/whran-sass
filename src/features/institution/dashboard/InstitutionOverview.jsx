@@ -4,6 +4,7 @@ import { useI18n } from '../../../i18n';
 import { FiEye, FiUsers, FiStar, FiBell, FiPlus } from 'react-icons/fi';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '../../../lib/supabase';
+import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionOverview.css';
 
 const statsData = [
@@ -20,6 +21,7 @@ export default function InstitutionOverview() {
     const { t, locale, dir } = useI18n();
     const { institution } = useOutletContext();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
     const [counts, setCounts] = useState({
         announcements: 0,
         reviews: 0,
@@ -30,20 +32,27 @@ export default function InstitutionOverview() {
     useEffect(() => {
         const fetchStats = async () => {
             if (!institution) return;
+            setLoading(true);
 
-            // Fetch live counts
-            const [annRes, revRes, msgRes] = await Promise.all([
-                supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
-                supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
-                supabase.from('institution_messages').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id)
-            ]);
+            try {
+                // Fetch live counts
+                const [annRes, revRes, msgRes] = await Promise.all([
+                    supabase.from('announcements').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
+                    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id),
+                    supabase.from('institution_messages').select('id', { count: 'exact', head: true }).eq('institution_id', institution.id)
+                ]);
 
-            setCounts({
-                announcements: annRes.count || 0,
-                reviews: revRes.count || 0,
-                messages: msgRes.count || 0,
-                followers: 0 // Placeholder until we have followers table
-            });
+                setCounts({
+                    announcements: annRes.count || 0,
+                    reviews: revRes.count || 0,
+                    messages: msgRes.count || 0,
+                    followers: 0 // Placeholder until we have followers table
+                });
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchStats();
     }, [institution]);
@@ -60,8 +69,20 @@ export default function InstitutionOverview() {
         <div className="inst-overview">
             <div className="inst-overview__header">
                 <div>
-                    <h1>{locale === 'ar' ? `أهلاً بك، ${institution ? institution.name_ar : ''}!` : `Bienvenue, ${institution ? institution.name_fr : ''}!`}</h1>
-                    <p>{locale === 'ar' ? 'إليك ملخص أداء مؤسستك هذا الأسبوع' : 'Voici un résumé de vos performances cette semaine'}</p>
+                    <h1>
+                        {loading || !institution ? (
+                            <Skeleton width="250px" height="32px" />
+                        ) : (
+                            locale === 'ar' ? `أهلاً بك، ${institution.name_ar}!` : `Bienvenue، ${institution.name_fr}!`
+                        )}
+                    </h1>
+                    <p>
+                        {loading ? (
+                            <Skeleton width="300px" height="18px" style={{ marginTop: '8px' }} />
+                        ) : (
+                            locale === 'ar' ? 'إليك ملخص أداء مؤسستك هذا الأسبوع' : 'Voici un résumé de vos performances cette semaine'
+                        )}
+                    </p>
                 </div>
                 <button className="btn-primary" onClick={() => navigate('/institution-admin/announcements')}>
                     <FiPlus />
@@ -77,8 +98,12 @@ export default function InstitutionOverview() {
                         </div>
                         <div className="inst-stat-card__content">
                             <span className="inst-stat-card__label">{card.label}</span>
-                            <span className="inst-stat-card__value">{card.value}</span>
-                            <span className="inst-stat-card__change">{card.change}</span>
+                            <span className="inst-stat-card__value">
+                                {loading ? <Skeleton width="40px" height="24px" /> : card.value}
+                            </span>
+                            <span className="inst-stat-card__change">
+                                {loading ? <Skeleton width="60px" height="14px" /> : card.change}
+                            </span>
                         </div>
                     </div>
                 ))}
@@ -93,23 +118,27 @@ export default function InstitutionOverview() {
                     </select>
                 </div>
                 <div style={{ width: '100%', height: 300 }}>
-                    <ResponsiveContainer>
-                        <AreaChart data={statsData}>
-                            <defs>
-                                <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
-                            <Tooltip
-                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                            />
-                            <Area type="monotone" dataKey="views" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    {loading ? (
+                        <Skeleton width="100%" height="100%" />
+                    ) : (
+                        <ResponsiveContainer>
+                            <AreaChart data={statsData}>
+                                <defs>
+                                    <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                />
+                                <Area type="monotone" dataKey="views" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    )}
                 </div>
             </div>
         </div>

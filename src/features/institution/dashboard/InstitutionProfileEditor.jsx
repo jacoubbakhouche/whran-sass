@@ -4,12 +4,14 @@ import { useI18n } from '../../../i18n';
 import { FiCamera, FiSave, FiMapPin, FiPhone, FiMail, FiGlobe } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
+import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionProfileEditor.css';
 
 export default function InstitutionProfileEditor() {
     const { t, locale, dir } = useI18n();
     const { institution } = useOutletContext();
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 4;
 
@@ -99,47 +101,54 @@ export default function InstitutionProfileEditor() {
     useEffect(() => {
         const fetchDeepData = async () => {
             if (!institution) return;
+            setInitialLoading(true);
             
-            // 1. Set basic info from props
-            const basicInfo = {
-                name_ar: institution.name_ar || '',
-                name_fr: institution.name_fr || '',
-                description: institution.description || '',
-                phone: institution.phone || '',
-                email: institution.email || '',
-                website: institution.website || '',
-                address_detail: institution.address_detail || '',
-                wilaya: institution.wilaya || '',
-                commune: institution.commune || '',
-                type: institution.type || 'school',
-                founded_year: institution.founded_year || '',
-                is_private: institution.is_private || false,
-                logo_url: institution.logo_url || '',
-                cover_url: institution.cover_url || '',
-                lat: institution.lat || '',
-                lng: institution.lng || '',
-            };
+            try {
+                // 1. Set basic info from props
+                const basicInfo = {
+                    name_ar: institution.name_ar || '',
+                    name_fr: institution.name_fr || '',
+                    description: institution.description || '',
+                    phone: institution.phone || '',
+                    email: institution.email || '',
+                    website: institution.website || '',
+                    address_detail: institution.address_detail || '',
+                    wilaya: institution.wilaya || '',
+                    commune: institution.commune || '',
+                    type: institution.type || 'school',
+                    founded_year: institution.founded_year || '',
+                    is_private: institution.is_private || false,
+                    logo_url: institution.logo_url || '',
+                    cover_url: institution.cover_url || '',
+                    lat: institution.lat || '',
+                    lng: institution.lng || '',
+                };
 
-            // 2. Fetch services separately
-            const { data: services } = await supabase
-                .from('institution_services')
-                .select('*')
-                .eq('institution_id', institution.id)
-                .maybeSingle();
+                // 2. Fetch services separately
+                const { data: services } = await supabase
+                    .from('institution_services')
+                    .select('*')
+                    .eq('institution_id', institution.id)
+                    .maybeSingle();
 
-            if (services) {
-                const [min, max] = (services.fee_range || '0 - 0').split(' - ');
-                setFormData({
-                    ...basicInfo,
-                    programs: services.programs || '',
-                    fee_min: min || '',
-                    fee_max: max || '',
-                    has_transport: services.has_transport || false,
-                    has_canteen: services.has_canteen || false,
-                    is_enrollment_open: services.is_enrollment_open ?? true,
-                });
-            } else {
-                setFormData(prev => ({ ...prev, ...basicInfo }));
+                if (services) {
+                    const [min, max] = (services.fee_range || '0 - 0').split(' - ');
+                    setFormData({
+                        ...basicInfo,
+                        programs: services.programs || '',
+                        fee_min: min || '',
+                        fee_max: max || '',
+                        has_transport: services.has_transport || false,
+                        has_canteen: services.has_canteen || false,
+                        is_enrollment_open: services.is_enrollment_open ?? true,
+                    });
+                } else {
+                    setFormData(prev => ({ ...prev, ...basicInfo }));
+                }
+            } catch (error) {
+                console.error('Error fetching deep data:', error);
+            } finally {
+                setInitialLoading(false);
             }
         };
 
@@ -295,31 +304,40 @@ export default function InstitutionProfileEditor() {
                     <div className="form-section wizard-animate-in">
                         <h3><FiCamera /> {locale === 'ar' ? 'الصور والوسائط' : 'Photos & Médias'}</h3>
                         <div className="image-grid">
-                            <label className={`image-upload-card logo-upload ${uploading.logo ? 'uploading' : ''}`}>
-                                <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} hidden />
-                                {formData.logo_url ? (
-                                    <img src={formData.logo_url} alt="Logo" className="preview-image" />
-                                ) : (
-                                    <>
-                                        <FiCamera />
-                                        <span>{locale === 'ar' ? 'شعار المؤسسة' : 'Logo'}</span>
-                                    </>
-                                )}
-                                <div className="badge">{uploading.logo ? '...' : (locale === 'ar' ? 'تغيير' : 'Changer')}</div>
-                            </label>
-                            
-                            <label className={`image-upload-card cover-upload ${uploading.cover ? 'uploading' : ''}`}>
-                                <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} hidden />
-                                {formData.cover_url ? (
-                                    <img src={formData.cover_url} alt="Cover" className="preview-image" />
-                                ) : (
-                                    <>
-                                        <FiCamera />
-                                        <span>{locale === 'ar' ? 'صورة الغلاف' : 'Couverture'}</span>
-                                    </>
-                                )}
-                                <div className="badge">{uploading.cover ? '...' : (locale === 'ar' ? 'تغيير' : 'Changer')}</div>
-                            </label>
+                            {initialLoading ? (
+                                <>
+                                    <Skeleton width="100%" height="150px" className="image-upload-card" />
+                                    <Skeleton width="100%" height="150px" className="image-upload-card" />
+                                </>
+                            ) : (
+                                <>
+                                    <label className={`image-upload-card logo-upload ${uploading.logo ? 'uploading' : ''}`}>
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} hidden />
+                                        {formData.logo_url ? (
+                                            <img src={formData.logo_url} alt="Logo" className="preview-image" />
+                                        ) : (
+                                            <>
+                                                <FiCamera />
+                                                <span>{locale === 'ar' ? 'شعار المؤسسة' : 'Logo'}</span>
+                                            </>
+                                        )}
+                                        <div className="badge">{uploading.logo ? '...' : (locale === 'ar' ? 'تغيير' : 'Changer')}</div>
+                                    </label>
+                                    
+                                    <label className={`image-upload-card cover-upload ${uploading.cover ? 'uploading' : ''}`}>
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'cover')} hidden />
+                                        {formData.cover_url ? (
+                                            <img src={formData.cover_url} alt="Cover" className="preview-image" />
+                                        ) : (
+                                            <>
+                                                <FiCamera />
+                                                <span>{locale === 'ar' ? 'صورة الغلاف' : 'Couverture'}</span>
+                                            </>
+                                        )}
+                                        <div className="badge">{uploading.cover ? '...' : (locale === 'ar' ? 'تغيير' : 'Changer')}</div>
+                                    </label>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
@@ -331,11 +349,11 @@ export default function InstitutionProfileEditor() {
                         <div className="input-grid">
                             <div className="input-group">
                                 <label>{locale === 'ar' ? 'الاسم (العربية)' : 'Nom (Arabe)'}</label>
-                                <input value={formData.name_ar} onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })} placeholder="..." />
+                                {initialLoading ? <Skeleton height="45px" /> : <input value={formData.name_ar} onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })} placeholder="..." />}
                             </div>
                             <div className="input-group">
                                 <label>{locale === 'ar' ? 'الاسم (الفرنسية)' : 'Nom (Français)'}</label>
-                                <input value={formData.name_fr} onChange={(e) => setFormData({ ...formData, name_fr: e.target.value })} placeholder="..." />
+                                {initialLoading ? <Skeleton height="45px" /> : <input value={formData.name_fr} onChange={(e) => setFormData({ ...formData, name_fr: e.target.value })} placeholder="..." />}
                             </div>
                         </div>
                         
