@@ -23,7 +23,7 @@ export default function ProductDetail() {
             try {
                 const { data, error } = await supabase
                     .from('products')
-                    .select('*, profiles:vendor_id(id, full_name, avatar_url)')
+                    .select('*, profiles(id, full_name, avatar_url)')
                     .eq('id', id)
                     .single();
                 
