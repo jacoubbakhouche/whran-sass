@@ -73,8 +73,23 @@ export default function InstitutionProfile() {
 
     if (loading) {
         return (
-            <div className="profile-loading" style={{ padding: '100px 0', textAlign: 'center' }}>
-                <p>{locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}</p>
+            <div className="profile-page" dir={dir}>
+                <div className="profile-hero-card">
+                    <div className="skeleton" style={{ width: '100%', height: '240px', borderRadius: '0 0 32px 32px' }} />
+                    <div className="profile-hero-card__content">
+                        <div className="profile-logo-floating skeleton skeleton-circle" style={{ width: '80px', height: '80px' }} />
+                        <div className="skeleton skeleton-text" style={{ width: '180px', height: '28px', marginTop: '20px' }} />
+                        <div className="skeleton skeleton-text medium" />
+                    </div>
+                </div>
+                <div style={{ padding: '24px' }}>
+                    <div className="skeleton skeleton-text short" style={{ marginBottom: '16px' }} />
+                    <div className="skeleton" style={{ width: '100%', height: '120px', borderRadius: '20px' }} />
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
+                        <div className="skeleton" style={{ flex: 1, height: '80px', borderRadius: '16px' }} />
+                        <div className="skeleton" style={{ flex: 1, height: '80px', borderRadius: '16px' }} />
+                    </div>
+                </div>
             </div>
         );
     }
