@@ -58,10 +58,14 @@ export default function InstitutionProfileEditor() {
             },
             (error) => {
                 console.error('Geolocation error:', error);
-                alert(locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation');
+                let msg = locale === 'ar' ? 'فشل جلب الموقع' : 'Échec de la localisation';
+                if (error.code === 1) msg = locale === 'ar' ? 'يرجى السماح للمتصفح بالوصول إلى موقعك' : 'Veuillez autoriser l\'accès à votre position';
+                else if (error.code === 3) msg = locale === 'ar' ? 'انتهت مهلة تحديد الموقع، حاول مجدداً' : 'Délai d’attente dépassé, réessayez';
+                
+                alert(msg);
                 setGeolocating(false);
             },
-            { enableHighAccuracy: true }
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
         );
     };
 
