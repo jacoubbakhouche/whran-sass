@@ -28,6 +28,8 @@ import VendorOverview from './features/vendor/components/VendorOverview';
 import StoreLayout from './features/vendor/StoreLayout';
 import Analytics from './features/vendor/Analytics';
 import StoreProfileEditor from './features/vendor/StoreProfileEditor';
+import VendorMessages from './features/vendor/VendorMessages';
+import ReviewsManager from './features/vendor/ReviewsManager';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RegistrationGuard from './components/auth/RegistrationGuard';
 import AccountStatusScreen from './features/auth/AccountStatusScreen';
@@ -126,6 +128,8 @@ function AppContent() {
             <Route path="orders" element={<OrderManager />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="profile" element={<StoreProfileEditor />} />
+            <Route path="messages" element={<VendorMessages />} />
+            <Route path="reviews" element={<ReviewsManager />} />
           </Route>
         </Route>
       </Route>

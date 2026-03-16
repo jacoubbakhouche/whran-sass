@@ -54,6 +54,8 @@ export default function StoreLayout() {
         { path: '/vendor/inventory', icon: <FiPackage />, label: locale === 'ar' ? 'المنتجات' : 'Produits' },
         { path: '/vendor/orders', icon: <FiMessageCircle />, label: locale === 'ar' ? 'الطلبات' : 'Commandes' },
         { path: '/vendor/analytics', icon: <FiTrendingUp />, label: locale === 'ar' ? 'المبيعات' : 'Ventes' },
+        { path: '/vendor/messages', icon: <FiMessageSquare />, label: locale === 'ar' ? 'الرسائل' : 'Messages' },
+        { path: '/vendor/reviews', icon: <FiStar />, label: locale === 'ar' ? 'التقييمات' : 'Avis' },
         { path: '/vendor/profile', icon: <FiUser />, label: locale === 'ar' ? 'الملف الشخصي' : 'Profil' },
     ];
 
