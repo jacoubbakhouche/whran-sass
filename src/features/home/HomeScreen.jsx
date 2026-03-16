@@ -13,9 +13,9 @@ import './HomeScreen.css';
 function InstitutionMiniCard({ inst }) {
   const navigate = useNavigate();
   const coverUrl = inst.cover_url
-    ? (inst.cover_url.startsWith('/mockups/') 
+    ? (inst.cover_url.startsWith('http') || inst.cover_url.startsWith('/mockups/') 
         ? inst.cover_url 
-        : supabase.storage.from('institution-covers').getPublicUrl(inst.cover_url).data.publicUrl)
+        : supabase.storage.from('profiles').getPublicUrl(inst.cover_url).data.publicUrl)
     : null;
 
   return (
@@ -34,7 +34,7 @@ function InstitutionMiniCard({ inst }) {
 function ProductMiniCard({ product }) {
   const navigate = useNavigate();
   const coverUrl = product.cover_url
-    ? (product.cover_url.startsWith('/mockups/') 
+    ? (product.cover_url.startsWith('http') || product.cover_url.startsWith('/mockups/') 
         ? product.cover_url 
         : supabase.storage.from('product-covers').getPublicUrl(product.cover_url).data.publicUrl)
     : null;

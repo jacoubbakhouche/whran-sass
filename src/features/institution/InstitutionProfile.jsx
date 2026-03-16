@@ -128,6 +128,15 @@ export default function InstitutionProfile() {
 
     const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === institution.type) || INSTITUTION_TYPES[0];
     const services = institution.institution_services || [];
+    const getImageUrl = (url, bucket = 'profiles') => {
+        if (!url) return null;
+        if (url.startsWith('http') || url.startsWith('/mockups/')) return url;
+        return supabase.storage.from(bucket).getPublicUrl(url).data.publicUrl;
+    };
+
+    const logoUrl = getImageUrl(institution.logo_url);
+    const coverUrl = getImageUrl(institution.cover_url);
+
     const announcements = institution.announcements || [];
     const reviews = institution.reviews || [];
 
@@ -154,21 +163,21 @@ export default function InstitutionProfile() {
                     className="profile-hero-card__bg" 
                     style={{ 
                         backgroundColor: typeInfo?.color + '20',
-                        backgroundImage: institution.cover_url ? `url(${institution.cover_url})` : 'none',
+                        backgroundImage: coverUrl ? `url(${coverUrl})` : 'none',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     }}
                 >
-                    {!institution.cover_url && (
+                    {!coverUrl && (
                         <div className="profile-hero-card__icon" style={{ color: typeInfo?.color }}>
                             {typeInfo?.icon}
                         </div>
                     )}
                 </div>
                 <div className="profile-hero-card__content">
-                    {institution.logo_url && (
+                    {logoUrl && (
                         <div className="profile-logo-floating">
-                            <img src={institution.logo_url} alt="Logo" />
+                            <img src={logoUrl} alt="Logo" />
                         </div>
                     )}
                     <span className="tag" style={{ background: typeInfo?.color + '15', color: typeInfo?.color }}>
