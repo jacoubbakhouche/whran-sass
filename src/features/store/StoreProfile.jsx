@@ -4,6 +4,17 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase } from '../../lib/supabase';
 import { useI18n } from '../../i18n';
+import { 
+    FiArrowRight, 
+    FiShoppingBag, 
+    FiMapPin, 
+    FiStar, 
+    FiMessageSquare, 
+    FiPhone, 
+    FiInfo, 
+    FiPlusCircle, 
+    FiX 
+} from 'react-icons/fi';
 import './StoreProfile.css';
 
 // Fix Leaflet icon issue
@@ -405,5 +416,3 @@ export default function StoreProfile() {
         </div>
     );
 }
-
-import { FiPlusCircle } from 'react-icons/fi';
