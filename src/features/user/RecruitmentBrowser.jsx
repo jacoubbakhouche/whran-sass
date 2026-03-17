@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useI18n } from '../../i18n';
 import { FiSearch, FiMapPin, FiBriefcase, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
@@ -22,11 +23,13 @@ const JOB_TYPES = [
 
 export default function RecruitmentBrowser() {
     const { locale, t, dir } = useI18n();
+    const navigate = useNavigate();
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [selectedWilaya, setSelectedWilaya] = useState('الكل');
     const [selectedType, setSelectedType] = useState('all');
+    const [selectedAd, setSelectedAd] = useState(null);
 
     useEffect(() => {
         fetchAds();
@@ -58,8 +61,22 @@ export default function RecruitmentBrowser() {
 
     const filteredAds = ads.filter(ad => {
         const title = (locale === 'ar' ? ad.title_ar : ad.title_fr).toLowerCase();
-        return title.includes(search.toLowerCase());
+        const desc = (locale === 'ar' ? ad.description_ar : ad.description_fr || '').toLowerCase();
+        const q = search.toLowerCase();
+        return title.includes(q) || desc.includes(q);
     });
+
+    const jobTypeLabel = (type) => {
+        const map = {
+            teacher: locale === 'ar' ? 'أستاذ' : 'Enseignant',
+            admin: locale === 'ar' ? 'إداري' : 'Administrateur',
+            counselor: locale === 'ar' ? 'مستشار توجيه' : 'Conseiller',
+            supervisor: locale === 'ar' ? 'مشرف تربوي' : 'Surveillant',
+            technician: locale === 'ar' ? 'تقني' : 'Technicien',
+            other: locale === 'ar' ? 'آخر' : 'Autre'
+        };
+        return map[type] || type;
+    };
 
     return (
         <div className="recruitment-browser" dir={dir}>
@@ -118,7 +135,7 @@ export default function RecruitmentBrowser() {
                     ) : (
                         <div className="ads-list">
                             {filteredAds.map(ad => (
-                                <div key={ad.id} className="public-ad-card">
+                                <div key={ad.id} className="public-ad-card" onClick={() => setSelectedAd(ad)}>
                                     <div className="ad-main-info">
                                         <div className="inst-mini-info">
                                             <img 
@@ -145,6 +162,32 @@ export default function RecruitmentBrowser() {
                     )}
                 </main>
             </div>
+
+            {selectedAd && (
+                <div className="job-modal-overlay" onClick={() => setSelectedAd(null)}>
+                    <div className="job-modal" dir={dir} onClick={e => e.stopPropagation()}>
+                        <div className="job-modal__header">
+                            <div>
+                                <h2>{locale === 'ar' ? selectedAd.title_ar : selectedAd.title_fr}</h2>
+                                <p className="job-meta">
+                                    <span><FiMapPin /> {selectedAd.wilaya}</span>
+                                    <span><FiBriefcase /> {jobTypeLabel(selectedAd.job_type)}</span>
+                                    <span>{new Date(selectedAd.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR')}</span>
+                                </p>
+                            </div>
+                            <button className="job-modal__close" onClick={() => setSelectedAd(null)}>×</button>
+                        </div>
+                        <div className="job-modal__body">
+                            <p>{locale === 'ar' ? selectedAd.description_ar : selectedAd.description_fr}</p>
+                        </div>
+                        <div className="job-modal__footer">
+                            <button className="btn-contact" onClick={() => navigate(`/institution/${selectedAd.institution_id}`)}>
+                                {locale === 'ar' ? 'ملف المؤسسة' : 'Voir l\'établissement'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

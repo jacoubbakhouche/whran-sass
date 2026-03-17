@@ -66,6 +66,7 @@ export default function HomeScreen() {
   const [announcements, setAnnouncements] = useState([]);
   const [products, setProducts] = useState([]);
   const [recruitmentAds, setRecruitmentAds] = useState([]);
+  const [selectedJobAd, setSelectedJobAd] = useState(null);
   
   const [loading, setLoading] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -135,6 +136,18 @@ export default function HomeScreen() {
     if (h < 18) return 'مساء الخير';
     return 'ليلة سعيدة';
   })();
+
+  const jobTypeLabel = (type) => {
+    const map = {
+      teacher: 'أستاذ',
+      admin: 'إداري',
+      counselor: 'مستشار توجيه',
+      supervisor: 'مشرف تربوي',
+      technician: 'تقني',
+      other: 'آخر'
+    };
+    return map[type] || type;
+  };
 
   return (
     <div className="home-page boutique-theme" dir="rtl">
@@ -263,7 +276,7 @@ export default function HomeScreen() {
             </div>
           )) :
             recruitmentAds.length > 0 ? recruitmentAds.map(ad => (
-              <div key={ad.id} className="ann-item-v2" onClick={() => navigate(`/institution/${ad.institution_id}`)}>
+              <div key={ad.id} className="ann-item-v2" onClick={() => setSelectedJobAd(ad)}>
                 <div className="ann-dot" />
                 <div className="ann-body" style={{ flex: 1 }}>
                   <h4>{locale === 'ar' ? ad.title_ar : ad.title_fr}</h4>
@@ -302,6 +315,33 @@ export default function HomeScreen() {
 
       {/* SEARCH MODAL OVERLAY */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Recruitment Ad Modal */}
+      {selectedJobAd && (
+        <div className="job-modal-overlay" onClick={() => setSelectedJobAd(null)}>
+          <div className="job-modal" dir="rtl" onClick={e => e.stopPropagation()}>
+            <div className="job-modal__header">
+              <div>
+                <h2>{locale === 'ar' ? selectedJobAd.title_ar : selectedJobAd.title_fr}</h2>
+                <p className="job-meta">
+                  <span><FiMapPin /> {selectedJobAd.wilaya}</span>
+                  <span><FiBriefcase /> {jobTypeLabel(selectedJobAd.job_type)}</span>
+                  <span>{new Date(selectedJobAd.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR')}</span>
+                </p>
+              </div>
+              <button className="job-modal__close" onClick={() => setSelectedJobAd(null)}>×</button>
+            </div>
+            <div className="job-modal__body">
+              <p>{locale === 'ar' ? selectedJobAd.description_ar : selectedJobAd.description_fr}</p>
+            </div>
+            <div className="job-modal__footer">
+              <button className="btn-primary" style={{ width: '100%' }} onClick={() => navigate(`/institution/${selectedJobAd.institution_id}`)}>
+                زيارة ملف المؤسسة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
