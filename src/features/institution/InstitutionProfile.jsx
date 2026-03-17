@@ -49,6 +49,7 @@ export default function InstitutionProfile() {
                         institution_images (*),
                         institution_services (*),
                         announcements (*),
+                        recruitment_ads (*),
                         reviews (
                             *,
                             profiles (
@@ -172,6 +173,18 @@ export default function InstitutionProfile() {
     const coverUrl = getImageUrl(institution.cover_url);
 
     const announcements = institution.announcements || [];
+    const recruitmentAds = institution.recruitment_ads || [];
+    const jobTypeLabel = (jobType) => {
+        const dict = {
+            teacher: locale === 'ar' ? 'أستاذ' : 'Enseignant',
+            admin: locale === 'ar' ? 'إداري' : 'Administrateur',
+            counselor: locale === 'ar' ? 'مستشار' : 'Conseiller',
+            supervisor: locale === 'ar' ? 'مشرف' : 'Surveillant',
+            technician: locale === 'ar' ? 'تقني' : 'Technicien',
+            other: locale === 'ar' ? 'آخر' : 'Autre',
+        };
+        return dict[jobType] || jobType;
+    };
     const reviews = institution.reviews || [];
 
     return (
@@ -283,6 +296,33 @@ export default function InstitutionProfile() {
                                         {locale === 'ar' ? 'اقرأ المزيد' : 'Lire la suite'}
                                         {dir === 'rtl' ? <FiChevronLeft size={14} /> : <FiChevronRight size={14} />}
                                     </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Recruitment Ads */}
+                {recruitmentAds.length > 0 && (
+                    <section className="profile-section">
+                        <h2 className="section-title">
+                            {locale === 'ar' ? 'عروض التوظيف' : 'Offres d\'emploi'}
+                        </h2>
+                        <div className="h-scroll">
+                            {recruitmentAds.map(ad => (
+                                <div key={ad.id} className="ann-item-card card">
+                                    <div className="ann-item-card__date">
+                                        <FiClock size={12} />
+                                        <span>{new Date(ad.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR')}</span>
+                                    </div>
+                                    <h3 className="ann-item-card__title">{locale === 'ar' ? ad.title_ar : ad.title_fr}</h3>
+                                    <p className="ann-item-card__snippet">
+                                        {(locale === 'ar' ? ad.description_ar : ad.description_fr)?.slice(0, 80)}...
+                                    </p>
+                                    <div className="profile-features-grid" style={{ marginTop: '8px' }}>
+                                        <span className="tag-outline">📍 {ad.wilaya}</span>
+                                        <span className="tag-outline">💼 {jobTypeLabel(ad.job_type)}</span>
+                                    </div>
                                 </div>
                             ))}
                         </div>

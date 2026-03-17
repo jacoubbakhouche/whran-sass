@@ -65,6 +65,7 @@ export default function HomeScreen() {
   const [institutions, setInstitutions] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [products, setProducts] = useState([]);
+  const [recruitmentAds, setRecruitmentAds] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -106,11 +107,20 @@ export default function HomeScreen() {
     // Q3: Store Products (Relevant to wilaya or general context)
     let prodQ = supabase.from('products').select('*').eq('status', 'active').limit(6);
 
-    const [insts, anns, prods] = await Promise.all([instQ, annQ, prodQ]);
+    // Q4: Recruitment ads (education jobs)
+    let jobsQ = supabase.from('recruitment_ads')
+      .select('*, institutions(name_ar)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(4);
+    if (selectedWilaya) jobsQ = jobsQ.eq('wilaya', selectedWilaya);
+
+    const [insts, anns, prods, jobs] = await Promise.all([instQ, annQ, prodQ, jobsQ]);
     
     setInstitutions(insts.data || []);
     setAnnouncements(anns.data || []);
     setProducts(prods.data || []);
+    setRecruitmentAds(jobs.data || []);
     
     setLoading(false);
   }, [selectedWilaya]);
@@ -232,6 +242,49 @@ export default function HomeScreen() {
                 {ann.registration_open && <span className="ann-badge">مفتوح</span>}
               </div>
             ))
+          }
+        </div>
+      </section>
+
+      {/* SECTION 6: Recruitment Ads */}
+      <section className="home-section-v2">
+        <div className="section-header">
+          <h2>وظائف التعليم</h2>
+          <Link to="/recruitment" className="view-link">المزيد <FiChevronLeft /></Link>
+        </div>
+        <div className="announcement-list-v2">
+          {loading ? [1,2].map(n => (
+            <div key={n} className="ann-item-v2 skeleton-ann-wrap">
+              <div className="skeleton skeleton-circle" style={{ width: '8px', height: '8px', flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div className="skeleton skeleton-text medium" style={{ height: '14px' }} />
+                <div className="skeleton skeleton-text short" />
+              </div>
+            </div>
+          )) :
+            recruitmentAds.length > 0 ? recruitmentAds.map(ad => (
+              <div key={ad.id} className="ann-item-v2" onClick={() => navigate(`/institution/${ad.institution_id}`)}>
+                <div className="ann-dot" />
+                <div className="ann-body" style={{ flex: 1 }}>
+                  <h4>{locale === 'ar' ? ad.title_ar : ad.title_fr}</h4>
+                  <p>{ad.institutions?.name_ar}</p>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                    <span className="tag-outline">{ad.wilaya}</span>
+                    <span className="tag-outline">{ad.job_type}</span>
+                  </div>
+                </div>
+                <span className="ann-badge" style={{ background: '#EEF2FF', color: '#4F46E5' }}>
+                  {new Date(ad.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            )) : (
+              <div className="ann-item-v2">
+                <div className="ann-body">
+                  <h4>لا توجد عروض توظيف حالياً</h4>
+                  <p>سيتم عرض الوظائف الجديدة هنا</p>
+                </div>
+              </div>
+            )
           }
         </div>
       </section>
