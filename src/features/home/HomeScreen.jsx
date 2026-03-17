@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FiBell, FiSearch, FiMap, FiChevronLeft, FiPlusCircle } from 'react-icons/fi';
+import { FiBell, FiSearch, FiMap, FiChevronLeft, FiPlusCircle, FiMapPin, FiBriefcase } from 'react-icons/fi';
 import { useI18n } from '../../i18n';
 import { supabase } from '../../lib/supabase';
 
