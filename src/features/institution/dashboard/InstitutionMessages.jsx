@@ -31,6 +31,7 @@ export default function InstitutionMessages() {
                 if (error) throw error;
                 
                 // Group messages into threads
+                // Only messages where reply_to is null are roots
                 const rootMessages = data.filter(m => !m.reply_to);
                 const replies = data.filter(m => !!m.reply_to);
 
@@ -40,7 +41,9 @@ export default function InstitutionMessages() {
                     return {
                         ...root,
                         replies: threadReplies,
-                        last_message: lastMsg
+                        last_message: lastMsg,
+                        // Consistently show the client name in sidebar
+                        client_name: root.sender_name 
                     };
                 }).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
 
@@ -55,8 +58,8 @@ export default function InstitutionMessages() {
     }, [institution]);
 
     const filteredMessages = messages.filter(m => {
-        // Search in sender name, subject or LATEST message content
-        const matchesSearch = m.sender_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        // Search in client name, subject or LATEST message content
+        const matchesSearch = m.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              m.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                              m.last_message.content?.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesSearch;
@@ -187,7 +190,7 @@ export default function InstitutionMessages() {
                                 </div>
                                 <div className="message-info">
                                     <div className="message-info-top">
-                                        <h4>{msg.sender_name}</h4>
+                                        <h4>{msg.client_name}</h4>
                                         <span className="time">{new Date(msg.last_message.created_at).toLocaleDateString()}</span>
                                     </div>
                                     <p className="subject">{msg.subject}</p>

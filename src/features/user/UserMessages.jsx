@@ -13,6 +13,7 @@ export default function UserMessages() {
     const [selectedThread, setSelectedThread] = useState(null);
     const [allMessages, setAllMessages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentUserId, setCurrentUserId] = useState(null);
     const [replyText, setReplyText] = useState('');
     const [sending, setSending] = useState(false);
 
@@ -23,6 +24,7 @@ export default function UserMessages() {
                 setLoading(false);
                 return;
             }
+            setCurrentUserId(user.id);
 
             try {
                 // Security Fix: Fetch root messages where user is the sender
@@ -60,7 +62,7 @@ export default function UserMessages() {
 
                 if (replyError) throw replyError;
 
-                // Combine into threads
+                // combine into threads
                 const threadList = rootMessages.map(root => {
                     const threadReplies = replies.filter(r => r.reply_to === root.id);
                     const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : root;
@@ -68,7 +70,9 @@ export default function UserMessages() {
                         ...root,
                         replies: threadReplies,
                         last_message: lastMsg,
-                        institution: root.institutions
+                        institution: root.institutions,
+                        // Ensure we always know who we are talking to
+                        display_name: getInstitutionName(root.institutions)
                     };
                 }).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
 
@@ -212,7 +216,7 @@ export default function UserMessages() {
 
                         {/* Replies */}
                         {selectedThread.replies.map(reply => (
-                            <div key={reply.id} className={`message-bubble ${reply.sender_id === selectedThread.sender_id ? 'sent' : 'received'}`}>
+                            <div key={reply.id} className={`message-bubble ${reply.sender_id === currentUserId ? 'sent' : 'received'}`}>
                                 <p>{reply.content}</p>
                                 <span className="bubble-time">
                                     {new Date(reply.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

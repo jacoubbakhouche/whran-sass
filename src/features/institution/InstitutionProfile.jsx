@@ -103,29 +103,33 @@ export default function InstitutionProfile() {
 
         setSendingMessage(true);
         try {
-            // Check if there is an existing thread (root message) between this user and institution
+            // Security Check & Thread Finding
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            if (!currentUser) return;
+
             const { data: existingThreads, error: threadError } = await supabase
                 .from('institution_messages')
                 .select('id')
                 .eq('institution_id', institution.id)
-                .eq('sender_id', user.id)
+                .eq('sender_id', currentUser.id)
                 .is('reply_to', null)
+                .order('created_at', { ascending: true })
                 .limit(1);
 
             if (threadError) throw threadError;
             
-            const replyTo = existingThreads && existingThreads.length > 0 ? existingThreads[0].id : null;
+            const rootId = existingThreads && existingThreads.length > 0 ? existingThreads[0].id : null;
 
             const { error } = await supabase
                 .from('institution_messages')
                 .insert([{
                     institution_id: institution.id,
-                    sender_id: user.id,
-                    sender_name: user.user_metadata?.full_name || user.email,
-                    sender_avatar: user.user_metadata?.avatar_url,
+                    sender_id: currentUser.id,
+                    sender_name: currentUser.user_metadata?.full_name || currentUser.email,
+                    sender_avatar: currentUser.user_metadata?.avatar_url,
                     subject: locale === 'ar' ? 'استفسار من الملف الشخصي' : 'Demande via profil',
                     content: messageContent,
-                    reply_to: replyTo
+                    reply_to: rootId
                 }]);
 
             if (error) throw error;
