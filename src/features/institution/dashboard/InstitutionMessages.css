@@ -414,6 +414,19 @@
     to { transform: translateY(-8px); background: #4f46e5; }
 }
 
+/* RTL Bubble Orientation Fix */
+[dir="rtl"] .message-bubble.sent {
+    align-self: flex-start; /* Right in RTL */
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 1.5rem;
+}
+
+[dir="rtl"] .message-bubble.received {
+    align-self: flex-end; /* Left in RTL */
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 1.5rem;
+}
+
 @media (max-width: 1024px) {
     .messages-sidebar { width: 320px; }
 }

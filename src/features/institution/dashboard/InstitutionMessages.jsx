@@ -7,7 +7,7 @@ import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionMessages.css';
 
 export default function InstitutionMessages() {
-    const { locale } = useI18n();
+    const { locale, dir } = useI18n();
     const { institution } = useOutletContext();
     const [activeTab, setActiveTab] = useState('inbox');
     const [selectedMessage, setSelectedMessage] = useState(null);
@@ -36,7 +36,10 @@ export default function InstitutionMessages() {
                 const replies = data.filter(m => !!m.reply_to);
 
                 const threadList = rootMessages.map(root => {
-                    const threadReplies = replies.filter(r => r.reply_to === root.id);
+                    const threadReplies = replies
+                        .filter(r => r.reply_to === root.id)
+                        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    
                     const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : root;
                     return {
                         ...root,
@@ -95,6 +98,7 @@ export default function InstitutionMessages() {
                 .insert([{
                     institution_id: institution.id,
                     sender_id: (await supabase.auth.getUser()).data.user.id,
+                    recipient_id: selectedMessage.sender_id,
                     sender_name: institution.name_ar || institution.name_fr,
                     sender_avatar: institution.logo_url,
                     subject: `Re: ${selectedMessage.subject}`,
@@ -126,7 +130,7 @@ export default function InstitutionMessages() {
     };
 
     return (
-        <div className="messages-container animate-up">
+        <div className="messages-container animate-up" dir={dir}>
             <div className="messages-header">
                 <div>
                     <h1>{locale === 'ar' ? 'مركز الرسائل' : 'Messagerie'}</h1>

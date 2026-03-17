@@ -125,6 +125,7 @@ export default function InstitutionProfile() {
                 .insert([{
                     institution_id: institution.id,
                     sender_id: currentUser.id,
+                    recipient_id: institution.owner_id,
                     sender_name: currentUser.user_metadata?.full_name || currentUser.email,
                     sender_avatar: currentUser.user_metadata?.avatar_url,
                     subject: locale === 'ar' ? 'استفسار من الملف الشخصي' : 'Demande via profil',

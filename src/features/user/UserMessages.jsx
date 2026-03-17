@@ -7,7 +7,7 @@ import Skeleton from '../../components/ui/Skeleton';
 import './UserMessages.css';
 
 export default function UserMessages() {
-    const { locale } = useI18n();
+    const { locale, dir } = useI18n();
     const navigate = useNavigate();
     const [threads, setThreads] = useState([]);
     const [selectedThread, setSelectedThread] = useState(null);
@@ -34,6 +34,7 @@ export default function UserMessages() {
                         *,
                         institutions (
                             id,
+                            owner_id,
                             name_ar,
                             name_fr,
                             logo_url
@@ -98,6 +99,7 @@ export default function UserMessages() {
                 .insert([{
                     institution_id: selectedThread.institution_id,
                     sender_id: user.id,
+                    recipient_id: selectedThread.institution?.owner_id,
                     sender_name: user.user_metadata?.full_name || user.email,
                     sender_avatar: user.user_metadata?.avatar_url,
                     subject: `Re: ${selectedThread.subject}`,
@@ -151,7 +153,7 @@ export default function UserMessages() {
     }
 
     return (
-        <div className="user-messages-page animate-up">
+        <div className="user-messages-page animate-up" dir={dir}>
             <header className="user-messages-header">
                 <button className="back-btn" onClick={() => navigate('/profile')}>
                     <FiArrowRight style={{ transform: locale === 'ar' ? 'none' : 'rotate(180deg)' }} />
