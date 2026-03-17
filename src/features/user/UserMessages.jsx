@@ -25,8 +25,8 @@ export default function UserMessages() {
             }
 
             try {
-                // Fetch all messages involving the user
-                const { data: messages, error } = await supabase
+                // Security Fix: Fetch root messages where user is the sender
+                const { data: rootMessages, error: rootError } = await supabase
                     .from('institution_messages')
                     .select(`
                         *,
@@ -37,16 +37,30 @@ export default function UserMessages() {
                             logo_url
                         )
                     `)
-                    .or(`sender_id.eq.${user.id},reply_to.not.is.null`) // This is a bit loose, but we'll filter
+                    .eq('sender_id', user.id)
+                    .is('reply_to', null)
+                    .order('created_at', { ascending: false });
+
+                if (rootError) throw rootError;
+
+                if (!rootMessages || rootMessages.length === 0) {
+                    setThreads([]);
+                    setLoading(false);
+                    return;
+                }
+
+                const rootIds = rootMessages.map(m => m.id);
+
+                // Fetch all replies related to these root messages
+                const { data: replies, error: replyError } = await supabase
+                    .from('institution_messages')
+                    .select('*')
+                    .in('reply_to', rootIds)
                     .order('created_at', { ascending: true });
 
-                if (error) throw error;
+                if (replyError) throw replyError;
 
-                // Process messages into threads
-                // Thread = Root message (reply_to is null) where user is sender
-                const rootMessages = messages.filter(m => !m.reply_to && m.sender_id === user.id);
-                const replies = messages.filter(m => !!m.reply_to);
-
+                // Combine into threads
                 const threadList = rootMessages.map(root => {
                     const threadReplies = replies.filter(r => r.reply_to === root.id);
                     const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : root;
@@ -59,7 +73,7 @@ export default function UserMessages() {
                 }).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
 
                 setThreads(threadList);
-                setAllMessages(messages);
+                setAllMessages([...rootMessages, ...replies]);
             } catch (err) {
                 console.error('Error fetching user messages:', err);
             } finally {

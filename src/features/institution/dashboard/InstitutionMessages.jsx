@@ -29,7 +29,22 @@ export default function InstitutionMessages() {
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
-                if (data) setMessages(data);
+                
+                // Group messages into threads
+                const rootMessages = data.filter(m => !m.reply_to);
+                const replies = data.filter(m => !!m.reply_to);
+
+                const threadList = rootMessages.map(root => {
+                    const threadReplies = replies.filter(r => r.reply_to === root.id);
+                    const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : root;
+                    return {
+                        ...root,
+                        replies: threadReplies,
+                        last_message: lastMsg
+                    };
+                }).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
+
+                setMessages(threadList);
             } catch (err) {
                 console.error('Error fetching messages:', err);
             } finally {
@@ -40,10 +55,11 @@ export default function InstitutionMessages() {
     }, [institution]);
 
     const filteredMessages = messages.filter(m => {
-        const matchesTab = activeTab === 'inbox' ? !m.reply_to : !!m.reply_to; 
+        // Search in sender name, subject or LATEST message content
         const matchesSearch = m.sender_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             m.subject?.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesTab && matchesSearch;
+                             m.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                             m.last_message.content?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch;
     });
 
     const unreadCount = messages.filter(m => !m.is_read && !m.reply_to).length;
@@ -86,7 +102,17 @@ export default function InstitutionMessages() {
 
             if (error) throw error;
             if (data) {
-                setMessages(prev => [data[0], ...prev]);
+                const newReply = data[0];
+                setSelectedMessage(prev => ({
+                    ...prev,
+                    replies: [...prev.replies, newReply],
+                    last_message: newReply
+                }));
+                setMessages(prev => prev.map(m => 
+                    m.id === selectedMessage.id 
+                    ? { ...m, replies: [...m.replies, newReply], last_message: newReply } 
+                    : m
+                ).sort((a, b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at)));
                 setReplyText('');
             }
         } catch (err) {
@@ -162,10 +188,10 @@ export default function InstitutionMessages() {
                                 <div className="message-info">
                                     <div className="message-info-top">
                                         <h4>{msg.sender_name}</h4>
-                                        <span className="time">{new Date(msg.created_at).toLocaleDateString()}</span>
+                                        <span className="time">{new Date(msg.last_message.created_at).toLocaleDateString()}</span>
                                     </div>
                                     <p className="subject">{msg.subject}</p>
-                                    <p className="preview">{msg.content}</p>
+                                    <p className="preview">{msg.last_message.content}</p>
                                 </div>
                             </div>
                         ))}
@@ -197,8 +223,8 @@ export default function InstitutionMessages() {
                                     <p>{selectedMessage.content}</p>
                                     <span className="bubble-time">{new Date(selectedMessage.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
-                                {messages.filter(m => m.reply_to === selectedMessage.id).map(reply => (
-                                    <div key={reply.id} className="message-bubble sent">
+                                {selectedMessage.replies.map(reply => (
+                                    <div key={reply.id} className={`message-bubble ${reply.sender_id === selectedMessage.sender_id ? 'received' : 'sent'}`}>
                                         <p>{reply.content}</p>
                                         <span className="bubble-time">{new Date(reply.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     </div>
