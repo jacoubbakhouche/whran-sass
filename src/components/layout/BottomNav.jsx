@@ -6,6 +6,7 @@ const userTabs = [
   { to: '/home',    icon: <FiHome size={22} />, label: 'الرئيسية'  },
   { to: '/map',     icon: <FiMap size={22} />, label: 'الخريطة'   },
   { to: '/search',  icon: <FiSearch size={22} />, label: 'البحث'      },
+  { to: '/profile/messages', icon: <FiMessageSquare size={22} />, label: 'الرسائل' },
   { to: '/store',   icon: <FiBook size={22} />, label: 'المكتبة'    },
   { to: '/profile', icon: <FiUser size={22} />, label: 'ملفي'       },
 ];

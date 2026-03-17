@@ -26,7 +26,7 @@ export default function ProfileScreen() {
   const [orders, setOrders]     = useState([]);
   const [threads, setThreads]   = useState([]);
   const [loading, setLoading]   = useState(true);
-  const [tab, setTab]           = useState('favorites');
+  const [tab, setTab]           = useState('messages');
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm]   = useState({ full_name: '', phone: '' });
   const [saving, setSaving]       = useState(false);
@@ -224,8 +224,8 @@ export default function ProfileScreen() {
       {/* ─── Tabs ─── */}
       <div className="profile-tabs h-scroll" style={{ padding: '0 var(--space-5)', borderBottom: '1px solid var(--border)' }}>
         {[
-          { id: 'favorites', label: 'المفضلة', icon: <FiHeart /> },
           { id: 'messages',  label: 'رسائلي',   icon: <FiMessageSquare /> },
+          { id: 'favorites', label: 'المفضلة', icon: <FiHeart /> },
           { id: 'orders',    label: 'طلباتي',   icon: <FiShoppingBag /> },
           { id: 'settings',  label: 'الإعدادات', icon: <FiSettings /> },
         ].map(t => (

@@ -92,7 +92,7 @@
 }
 
 .profile-tab {
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4);
   font-weight: 800;
   color: var(--text-muted);
   background: transparent;
