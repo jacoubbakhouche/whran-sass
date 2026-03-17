@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
-import { FiSend, FiSearch, FiMessageSquare } from 'react-icons/fi';
+import { FiSend, FiSearch, FiMessageSquare, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionMessages.css';
@@ -217,7 +217,7 @@ export default function InstitutionMessages() {
                         <>
                             <div className="viewer-header">
                                 <button className="back-btn" onClick={() => setSelectedMessage(null)}>
-                                    <FiSend style={{ transform: locale === 'ar' ? 'rotate(180deg)' : 'none' }} />
+                                    {dir === 'rtl' ? <FiArrowRight size={24} /> : <FiArrowLeft size={24} />}
                                 </button>
                                 <img src={selectedMessage.sender_avatar || `https://ui-avatars.com/api/?name=${selectedMessage.sender_name}&background=random`} alt={selectedMessage.sender_name} className="avatar-large" />
                                 <div className="viewer-meta">

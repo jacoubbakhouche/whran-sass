@@ -432,28 +432,103 @@
 }
 
 @media (max-width: 768px) {
+    .messages-container {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        background: #f8fafc;
+    }
+
+    .messages-header {
+        display: none;
+    }
+
     .messages-layout {
         margin: 0;
         border-radius: 0;
         height: 100%;
+        border: none;
+        box-shadow: none;
     }
-    .messages-container {
-        padding: 0;
-        height: 100vh;
+
+    .messages-sidebar {
+        width: 100%;
+        border: none;
     }
-    .messages-header { display: none; }
-    
-    .messages-viewer {
+
+    .message-viewer {
         position: fixed;
         inset: 0;
-        z-index: 50;
+        z-index: 2000;
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
     }
-    
+
+    [dir="rtl"] .message-viewer {
+        transform: translateX(-100%);
+    }
+
     .viewer--open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
-    
-    .back-btn { display: block; }
+
+    .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        margin-inline-end: 0.5rem;
+    }
+
+    .viewer-header {
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .avatar-large {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+    .viewer-meta h3 {
+        font-size: 1.1rem;
+    }
+
+    .viewer-meta p {
+        font-size: 0.85rem;
+    }
+
+    .viewer-body {
+        padding: 1rem;
+        padding-bottom: 5rem; /* Space for input */
+    }
+
+    .viewer-footer {
+        padding: 1rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #f1f5f9;
+        padding-bottom: env(safe-area-inset-bottom, 1rem);
+    }
+
+    .message-bubble {
+        max-width: 90%;
+        padding: 1rem 1.25rem;
+        font-size: 0.95rem;
+    }
 }
