@@ -133,6 +133,14 @@
   flex: 1;
   padding: var(--space-8);
   overflow-y: auto;
+  /* مساحة إضافية حتى لا يغطي شريط التنقل السفلي الأزرار أو القوائم المنسدلة على الموبايل */
+  padding-bottom: 160px;
+}
+
+@media (min-width: 1024px) {
+  .inst-content {
+    padding-bottom: var(--space-8);
+  }
 }
 
 /* ─── Dashboard Stats ─── */

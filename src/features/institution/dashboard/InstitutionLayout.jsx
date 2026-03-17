@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
-import { FiGrid, FiUser, FiBell, FiMessageSquare, FiTrendingUp, FiLogOut, FiMenu, FiX, FiLayers } from 'react-icons/fi';
+import { FiGrid, FiUser, FiBell, FiMessageSquare, FiTrendingUp, FiLogOut, FiMenu, FiX, FiLayers, FiBriefcase } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import './InstitutionLayout.css';
@@ -59,6 +59,7 @@ export default function InstitutionLayout() {
         { path: '/institution-admin/profile', icon: <FiUser />, label: locale === 'ar' ? 'الملف الشخصي' : 'Profil' },
         { path: '/institution-admin/announcements', icon: <FiBell />, label: locale === 'ar' ? 'الإعلانات' : 'Annonces' },
         { path: '/institution-admin/messages', icon: <FiMessageSquare />, label: locale === 'ar' ? 'الرسائل' : 'Messages' },
+        { path: '/institution-admin/recruitment', icon: <FiBriefcase />, label: locale === 'ar' ? 'التوظيف' : 'Recrutement' },
         { path: '/institution-admin/analytics', icon: <FiTrendingUp />, label: locale === 'ar' ? 'الإحصائيات' : 'Stats' },
     ];
 

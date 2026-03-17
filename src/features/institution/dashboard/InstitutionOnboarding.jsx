@@ -9,7 +9,7 @@ import './InstitutionOnboarding.css';
 
 export default function InstitutionOnboarding({ onComplete }) {
     const { t, locale, dir } = useI18n();
-    const { user } = useAuth();
+    const { user, refreshProfile } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     
@@ -92,6 +92,9 @@ export default function InstitutionOnboarding({ onComplete }) {
                 .from('profiles')
                 .update({ has_filled_form: true, status: 'active' })
                 .eq('id', user.id);
+
+            // Refresh auth context profile so UI (bottom nav) updates immediately
+            await refreshProfile();
 
             if (onComplete) onComplete();
         } catch (err) {

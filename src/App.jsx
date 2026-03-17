@@ -11,6 +11,7 @@ import ProductDetail from './features/store/ProductDetail';
 import StoreProfile from './features/store/StoreProfile';
 import ProfileScreen from './features/user/ProfileScreen';
 import UserMessages from './features/user/UserMessages';
+import RecruitmentBrowser from './features/user/RecruitmentBrowser';
 import InstitutionProfile from './features/institution/InstitutionProfile';
 import AdminApp from './features/admin/AdminApp';
 import InstitutionAuth from './features/institution/InstitutionAuth';
@@ -23,6 +24,7 @@ import InstitutionProfileEditor from './features/institution/dashboard/Instituti
 import InstitutionMessages from './features/institution/dashboard/InstitutionMessages';
 import InstitutionAnalytics from './features/institution/dashboard/InstitutionAnalytics';
 import AnnouncementManager from './features/institution/dashboard/AnnouncementManager';
+import RecruitmentManager from './features/institution/dashboard/RecruitmentManager';
 import InventoryManager from './features/vendor/InventoryManager';
 import OrderManager from './features/vendor/OrderManager';
 import VendorOverview from './features/vendor/components/VendorOverview';
@@ -92,6 +94,7 @@ function AppContent() {
       <Route path="/cart" element={<UserLayout><CartScreen /></UserLayout>} />
       <Route path="/profile" element={<UserLayout><ProfileScreen /></UserLayout>} />
       <Route path="/profile/messages" element={<UserLayout><UserMessages /></UserLayout>} />
+      <Route path="/recruitment" element={<UserLayout><RecruitmentBrowser /></UserLayout>} />
 
       {/* ─── Shared detail ─── */}
       <Route path="/institution/:id" element={<UserLayout><InstitutionProfile /></UserLayout>} />
@@ -117,6 +120,7 @@ function AppContent() {
             <Route path="announcements" element={<AnnouncementManager />} />
             <Route path="messages" element={<InstitutionMessages />} />
             <Route path="analytics" element={<InstitutionAnalytics />} />
+            <Route path="recruitment" element={<RecruitmentManager />} />
           </Route>
         </Route>
       </Route>

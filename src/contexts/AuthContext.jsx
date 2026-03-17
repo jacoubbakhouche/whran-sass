@@ -66,6 +66,11 @@ export function AuthProvider({ children }) {
         }
     };
 
+    const refreshProfile = async () => {
+        if (!user?.id) return null;
+        return fetchProfile(user.id);
+    };
+
     const signOut = async () => {
         await supabase.auth.signOut();
         setSession(null);
@@ -80,6 +85,7 @@ export function AuthProvider({ children }) {
         role: profile?.role ?? user?.user_metadata?.role ?? null,
         loading,
         signOut,
+        refreshProfile,
     };
 
     return (

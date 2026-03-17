@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { FiHome, FiMap, FiSearch, FiBook, FiUser, FiGrid, FiBell, FiMessageSquare, FiTrendingUp, FiShoppingBag, FiTruck } from 'react-icons/fi';
+import { useAuth } from '../../contexts/AuthContext';
 import './BottomNav.css';
 
 const userTabs = [
@@ -27,13 +28,14 @@ const vendorTabs = [
 
 export default function BottomNav() {
   const location = useLocation();
+  const { profile } = useAuth();
   
   // Conditionally select tabs based on current path
   let activeTabs = userTabs;
   if (location.pathname.startsWith('/institution-admin')) activeTabs = institutionTabs;
   else if (location.pathname.startsWith('/vendor')) activeTabs = vendorTabs;
 
-  // Still hide on login/portal/onboarding/dashboards
+  // Hide in login/portal/onboarding/dashboards
   const hidden = [
     '/login', '/institution-login', '/vendor-login', 
     '/pro-portal', '/admin-login', '/admin', 
@@ -42,6 +44,9 @@ export default function BottomNav() {
   ];
   // More specific check: hide on exact dashboard roots and specific detail pages
   if (hidden.some(p => location.pathname === p || location.pathname.startsWith(p))) return null;
+
+  // Hide bottom nav for institution onboarding until profile completed
+  if (location.pathname.startsWith('/institution-admin') && !profile?.has_filled_form) return null;
 
   return (
     <nav className="bottom-nav" dir="rtl">
