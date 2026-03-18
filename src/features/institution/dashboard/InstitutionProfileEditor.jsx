@@ -3,12 +3,13 @@ import { useOutletContext } from 'react-router-dom';
 import { useI18n } from '../../../i18n';
 import { FiCamera, FiSave, FiMapPin, FiPhone, FiMail, FiGlobe } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
+import { INSTITUTION_TYPES } from '../../../lib/mockData';
 import { useAuth } from '../../../contexts/AuthContext';
 import Skeleton from '../../../components/ui/Skeleton';
 import './InstitutionProfileEditor.css';
 
 export default function InstitutionProfileEditor() {
-    const { t, locale, dir } = useI18n();
+    const { t, locale, dir, getField } = useI18n();
     const { institution } = useOutletContext();
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function InstitutionProfileEditor() {
         address_detail: '', 
         wilaya: '', 
         commune: '',
-        type: 'school', 
+        type: 'primary', 
         founded_year: '',
         is_private: false,
         programs: '',
@@ -98,6 +99,17 @@ export default function InstitutionProfileEditor() {
 
     const [uploading, setUploading] = useState({ logo: false, cover: false });
 
+    const normalizeTypeValue = (value) => {
+        if (!value) return 'primary';
+        const match = INSTITUTION_TYPES.find(t => t.value === value || t.name_ar === value || t.name_fr === value);
+        if (match) return match.value;
+        if (value === 'school' || value === 'مدرسة') return 'primary';
+        if (value === 'secondary' || value === 'ثانوي' || value === 'ثانوية') return 'high';
+        if (value === 'middle' || value === 'متوسط' || value === 'متوسطة') return 'middle';
+        if (value === 'nursery') return 'kindergarten';
+        return value;
+    };
+
     useEffect(() => {
         const fetchDeepData = async () => {
             if (!institution) return;
@@ -115,7 +127,7 @@ export default function InstitutionProfileEditor() {
                     address_detail: institution.address_detail || '',
                     wilaya: institution.wilaya || '',
                     commune: institution.commune || '',
-                    type: institution.type || 'school',
+                    type: normalizeTypeValue(institution.type) || 'primary',
                     founded_year: institution.founded_year || '',
                     is_private: institution.is_private || false,
                     logo_url: institution.logo_url || '',
@@ -361,12 +373,11 @@ export default function InstitutionProfileEditor() {
                             <div className="input-group">
                                 <label>{locale === 'ar' ? 'نوع المؤسسة' : 'Type'}</label>
                                 <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })}>
-                                    <option value="school">{locale === 'ar' ? 'مدرسة' : 'École'}</option>
-                                    <option value="primary">{locale === 'ar' ? 'ابتدائي' : 'Primaire'}</option>
-                                    <option value="middle">{locale === 'ar' ? 'متوسط' : 'Moyen'}</option>
-                                    <option value="secondary">{locale === 'ar' ? 'ثانوي' : 'Secondaire'}</option>
-                                    <option value="university">{locale === 'ar' ? 'جامعة' : 'Université'}</option>
-                                    <option value="training">{locale === 'ar' ? 'مركز تدريب' : 'Centre de formation'}</option>
+                                    {INSTITUTION_TYPES.map((type) => (
+                                        <option key={type.value} value={type.value}>
+                                            {getField(type, 'name')}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="input-group">

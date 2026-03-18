@@ -4,11 +4,11 @@ import { useI18n } from '../../../i18n';
 import { FiCheck, FiLogOut, FiInfo, FiMapPin, FiPhone, FiGlobe, FiLayers } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
-import { WILAYAS } from '../../../lib/mockData';
+import { WILAYAS, INSTITUTION_TYPES } from '../../../lib/mockData';
 import './InstitutionOnboarding.css';
 
 export default function InstitutionOnboarding({ onComplete }) {
-    const { t, locale, dir } = useI18n();
+    const { t, locale, dir, getField } = useI18n();
     const { user, refreshProfile } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function InstitutionOnboarding({ onComplete }) {
     const [formData, setFormData] = useState({
         name_ar: '',
         name_fr: '',
-        type: 'مدرسة',
+        type: 'primary',
         wilaya: '16',
         commune: '',
         address_detail: '',
@@ -140,12 +140,11 @@ export default function InstitutionOnboarding({ onComplete }) {
                                 <div className="form-group">
                                     <label><FiLayers /> {locale === 'ar' ? 'نوع المؤسسة' : 'Type'}</label>
                                     <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
-                                        <option value="مدرسة">{locale === 'ar' ? 'مدرسة' : 'École'}</option>
-                                        <option value="ابتدائي">{locale === 'ar' ? 'ابتدائي' : 'Primaire'}</option>
-                                        <option value="متوسط">{locale === 'ar' ? 'متوسط' : 'CEM'}</option>
-                                        <option value="ثانوي">{locale === 'ar' ? 'ثانوي' : 'Lycée'}</option>
-                                        <option value="جامعة">{locale === 'ar' ? 'جامعة' : 'Université'}</option>
-                                        <option value="مركز تدريب">{locale === 'ar' ? 'مركز تدريب' : 'Centre de formation'}</option>
+                                        {INSTITUTION_TYPES.map((type) => (
+                                            <option key={type.value} value={type.value}>
+                                                {getField(type, 'name')}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group">

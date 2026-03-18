@@ -11,6 +11,9 @@ import ProductDetail from './features/store/ProductDetail';
 import StoreProfile from './features/store/StoreProfile';
 import ProfileScreen from './features/user/ProfileScreen';
 import UserMessages from './features/user/UserMessages';
+import FavoritesView from './features/user/FavoritesView';
+import OrdersView from './features/user/OrdersView';
+import SettingsView from './features/user/SettingsView';
 import RecruitmentBrowser from './features/user/RecruitmentBrowser';
 import InstitutionProfile from './features/institution/InstitutionProfile';
 import AdminApp from './features/admin/AdminApp';
@@ -94,6 +97,9 @@ function AppContent() {
       <Route path="/cart" element={<UserLayout><CartScreen /></UserLayout>} />
       <Route path="/profile" element={<UserLayout><ProfileScreen /></UserLayout>} />
       <Route path="/profile/messages" element={<UserLayout><UserMessages /></UserLayout>} />
+      <Route path="/favorites" element={<UserLayout><FavoritesView /></UserLayout>} />
+      <Route path="/orders" element={<UserLayout><OrdersView /></UserLayout>} />
+      <Route path="/settings" element={<UserLayout><SettingsView /></UserLayout>} />
       <Route path="/recruitment" element={<UserLayout><RecruitmentBrowser /></UserLayout>} />
 
       {/* ─── Shared detail ─── */}

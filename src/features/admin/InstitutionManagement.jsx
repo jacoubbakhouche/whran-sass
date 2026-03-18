@@ -18,6 +18,9 @@ export default function InstitutionManagement() {
         fetchInstitutions();
     }, []);
 
+    const resolveTypeInfo = (type) =>
+        INSTITUTION_TYPES.find(t => t.value === type || t.name_ar === type || t.name_fr === type) || INSTITUTION_TYPES[0];
+
     const fetchInstitutions = async () => {
         setLoading(true);
         try {
@@ -244,7 +247,8 @@ export default function InstitutionManagement() {
                     </thead>
                     <tbody>
                         {filtered.map(inst => {
-                            const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === inst.type) || INSTITUTION_TYPES[0];
+                            const typeInfo = resolveTypeInfo(inst.type);
+                            const typeLabel = typeInfo ? getField(typeInfo, 'name') : inst.type;
                             const isProfile = inst.is_profile_only;
                             
                             return (
@@ -260,7 +264,7 @@ export default function InstitutionManagement() {
                                     </td>
                                     <td>
                                         <span className="inst-table__type" style={{ color: isProfile ? 'var(--primary)' : typeInfo?.color }}>
-                                            {inst.type}
+                                            {typeLabel || inst.type}
                                         </span>
                                     </td>
                                     <td>{inst.wilayas ? getField(inst.wilayas, 'name') : '-'}</td>

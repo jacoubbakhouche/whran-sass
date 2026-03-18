@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { supabase } from '../../lib/supabase';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { INSTITUTION_TYPES as MASTER_TYPES } from '../../lib/mockData';
 import './MapScreen.css';
 
 // Fix default marker icons
@@ -25,11 +26,24 @@ const TYPE_COLORS = {
   'مركز تدريب':  '#E07A3A',
   'مركز لغات':   '#E07A3A',
   'تكوين مهني':  '#B7950B',
+  'kindergarten': '#FF9F7F',
+  'primary': '#2D6A4F',
+  'middle': '#2D6A4F',
+  'high': '#2D6A4F',
+  'university': '#1A5276',
+  'training': '#E07A3A',
+  'vocational': '#B7950B',
+  'private': '#EC4899',
+  'private_primary': '#8B5CF6',
+  'private_high': '#6366F1',
+  'private_institute': '#0EA5E9',
+  'quranic': '#14B8A6',
   'متجر':        '#6366F1',
   'مكتبة':       '#8B4513',
 };
 
 function getTypeColor(type) {
+  if (type && TYPE_COLORS[type]) return TYPE_COLORS[type];
   for (const key of Object.keys(TYPE_COLORS)) {
     if (type?.includes(key)) return TYPE_COLORS[key];
   }
@@ -51,7 +65,7 @@ function createColoredMarker(color) {
   });
 }
 
-const INSTITUTION_TYPES = [
+const FILTER_TYPES = [
   { label: 'الكل', value: '' },
   { label: 'حضانة / روضة', value: 'nursery' },
   { label: 'مدارس', value: 'school' },
@@ -63,15 +77,21 @@ const INSTITUTION_TYPES = [
 
 function typeMatches(instType, filterValue) {
   if (!filterValue) return true;
+  const value = instType || '';
   const m = {
-    nursery:   ['حضانة', 'روضة'],
-    school:    ['ابتدائية', 'إكمالية', 'ثانوية'],
-    university:['جامعة', 'جامعة خاصة'],
-    training:  ['مركز تدريب', 'مركز لغات'],
-    vocational:['تكوين مهني'],
+    nursery:   ['حضانة', 'روضة', 'kindergarten'],
+    school:    ['ابتدائية', 'إكمالية', 'ثانوية', 'مدرسة خاصة', 'مدرسة قرآنية', 'primary', 'middle', 'high', 'private', 'private_primary', 'quranic'],
+    university:['جامعة', 'جامعة خاصة', 'مدرسة عالية خاصة', 'معهد خاص', 'university', 'private_high', 'private_institute'],
+    training:  ['مركز تدريب', 'مركز لغات', 'معهد خاص', 'training', 'private_institute'],
+    vocational:['تكوين مهني', 'vocational', 'training'],
     store:     ['متجر', 'مكتبة'],
   };
-  return (m[filterValue] || []).some(k => instType?.includes(k));
+  return (m[filterValue] || []).some(k => value.includes(k));
+}
+
+function getTypeLabel(type) {
+  const match = MASTER_TYPES.find(t => t.value === type || t.name_ar === type || t.name_fr === type);
+  return match ? match.name_ar : type;
 }
 
 function FlyToLocation({ coords }) {
@@ -248,7 +268,7 @@ export default function MapScreen() {
       {/* ─── Type Filter Chips ─── */}
       <div className="map-type-filters">
         <div className="h-scroll" style={{ padding: '0 var(--space-4)' }}>
-          {INSTITUTION_TYPES.map(t => (
+          {FILTER_TYPES.map(t => (
             <button
               key={t.value}
               className={`chip ${typeFilter === t.value ? 'active' : ''}`}
@@ -290,7 +310,7 @@ export default function MapScreen() {
                     background: getTypeColor(selected.type) + '22',
                     color: getTypeColor(selected.type)
                   }}>
-                    {selected.type}
+                    {getTypeLabel(selected.type)}
                   </span>
                 </div>
                 <button className="map-bottom-sheet__close" onClick={() => setSheetVisible(false)}>✕</button>

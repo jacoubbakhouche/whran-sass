@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { INSTITUTION_TYPES } from '../../lib/mockData';
 import { FiHeart, FiMapPin, FiStar, FiChevronRight } from 'react-icons/fi';
@@ -9,6 +9,7 @@ import './FavoritesView.css';
 
 export default function FavoritesView() {
     const { t, locale, dir, getField } = useI18n();
+    const navigate = useNavigate();
     const { user, profile } = useAuth();
     const [favorites, setFavorites] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
@@ -48,6 +49,9 @@ export default function FavoritesView() {
         };
         fetchFavoritesData();
     }, [user]);
+
+    const resolveTypeInfo = (type) =>
+        INSTITUTION_TYPES.find(t => t.value === type || t.name_ar === type || t.name_fr === type) || INSTITUTION_TYPES[0];
 
     const removeFavorite = async (e, instId) => {
         e.preventDefault();
@@ -100,7 +104,7 @@ export default function FavoritesView() {
                 ) : (
                     <div className="favorites-grid">
                         {favorites.map((inst, index) => {
-                            const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === inst.type) || INSTITUTION_TYPES[0];
+                            const typeInfo = resolveTypeInfo(inst.type);
                             return (
                                 <Link to={`/institution/${inst.id}`} key={inst.id} className="favorite-card animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                                     <button 
@@ -132,7 +136,7 @@ export default function FavoritesView() {
 
                 <div className="suggested-row" style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px' }}>
                     {suggestions.map((inst) => {
-                         const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === inst.type) || INSTITUTION_TYPES[0];
+                         const typeInfo = resolveTypeInfo(inst.type);
                          return (
                             <Link to={`/institution/${inst.id}`} key={`sug-${inst.id}`} className="suggested-card" style={{ flex: '0 0 80px' }}>
                                 <div className="suggested-card__image" style={{ background: typeInfo?.color, borderRadius: '16px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>

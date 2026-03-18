@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useI18n } from '../../i18n';
+import { INSTITUTION_TYPES } from '../../lib/mockData';
 import { FiCheck, FiX, FiClock, FiUser, FiHome, FiAlertCircle } from 'react-icons/fi';
 
 export default function VerificationRequests() {
-    const { locale, dir } = useI18n();
+    const { locale, dir, getField } = useI18n();
     const [institutions, setInstitutions] = useState([]);
     const [sellers, setSellers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('institutions');
+
+    const resolveTypeInfo = (type) =>
+        INSTITUTION_TYPES.find(t => t.value === type || t.name_ar === type || t.name_fr === type);
 
     useEffect(() => {
         // Initial fetch
@@ -118,7 +122,7 @@ export default function VerificationRequests() {
                                         <div className="request-icon"><FiHome /></div>
                                         <div>
                                             <h3>{locale === 'ar' ? inst.name_ar : inst.name_fr}</h3>
-                                            <p>{inst.type} • {inst.wilaya}</p>
+                                            <p>{getField(resolveTypeInfo(inst.type), 'name') || inst.type} • {inst.wilaya}</p>
                                         </div>
                                     </div>
                                     <div className="request-actions">

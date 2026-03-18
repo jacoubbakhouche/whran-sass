@@ -2,13 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiX, FiSearch, FiArrowLeft, FiHash } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
+import { useI18n } from '../../i18n';
+import { INSTITUTION_TYPES } from '../../lib/mockData';
 import './SearchModal.css';
 
 export default function SearchModal({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const { getField } = useI18n();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState({ institutions: [], products: [], announcements: [] });
   const [loading, setLoading] = useState(false);
+
+  const getTypeLabel = (type) => {
+    const match = INSTITUTION_TYPES.find(t => t.value === type || t.name_ar === type || t.name_fr === type);
+    return match ? getField(match, 'name') : type;
+  };
 
   const handleSearch = useCallback(async (text) => {
     if (!text || text.length < 2) {
@@ -80,7 +88,7 @@ export default function SearchModal({ isOpen, onClose }) {
                   {results.institutions.map(item => (
                     <div key={item.id} className="result-item" onClick={() => { navigate(`/institution/${item.id}`); onClose(); }}>
                       <span className="name">{item.name_ar}</span>
-                      <span className="type">{item.type}</span>
+                      <span className="type">{getTypeLabel(item.type)}</span>
                     </div>
                   ))}
                 </section>

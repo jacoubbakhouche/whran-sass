@@ -16,8 +16,12 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-function createCustomIcon(typeString, getField) {
-    const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === typeString) || INSTITUTION_TYPES[0];
+function resolveTypeInfo(typeString) {
+    return INSTITUTION_TYPES.find(t => t.value === typeString || t.name_ar === typeString || t.name_fr === typeString) || INSTITUTION_TYPES[0];
+}
+
+function createCustomIcon(typeString) {
+    const typeInfo = resolveTypeInfo(typeString);
     return L.divIcon({
         html: `<div class="map-marker" style="--marker-color: ${typeInfo.color}">
       <span class="map-marker__icon">${typeInfo.icon}</span>
@@ -105,7 +109,7 @@ export default function MapView({ institutions = [], selectedId, onSelect, heigh
                     <Marker
                         key={inst.id}
                         position={[inst.lat, inst.lng]}
-                        icon={createCustomIcon(inst.type, getField)}
+                        icon={createCustomIcon(inst.type)}
                         eventHandlers={{
                             click: () => onSelect?.(inst.id),
                         }}

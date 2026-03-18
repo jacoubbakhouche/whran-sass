@@ -161,7 +161,7 @@ export default function InstitutionProfile() {
         );
     }
 
-    const typeInfo = INSTITUTION_TYPES.find(t => getField(t, 'name') === institution.type) || INSTITUTION_TYPES[0];
+    const typeInfo = INSTITUTION_TYPES.find(t => t.value === institution.type || t.name_ar === institution.type || t.name_fr === institution.type) || INSTITUTION_TYPES[0];
     const services = institution.institution_services || [];
     const getImageUrl = (url, bucket = 'profiles') => {
         if (!url) return null;

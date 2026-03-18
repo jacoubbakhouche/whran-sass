@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiHeart, FiMoreVertical, FiStar, FiShoppingBag, FiX, FiMessageSquare } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
+import { useI18n } from '../../i18n';
 
 import './ProductDetail.css';
 
 export default function ProductDetail() {
+    const { locale, dir } = useI18n();
     const { id } = useParams();
     const navigate = useNavigate();
     const [book, setBook] = useState(null);
@@ -41,9 +43,70 @@ export default function ProductDetail() {
         fetchProduct();
     }, [id]);
 
+    const texts = (() => {
+        if (locale === 'fr') {
+            return {
+                back: 'Retour',
+                notFound: 'Produit introuvable',
+                trustedStore: 'Boutique fiable',
+                sizeLabel: 'Votre taille',
+                description: 'Description',
+                defaultDescription: 'Ce produit est sélectionné avec soin pour représenter une qualité élevée et une grande durabilité.',
+                buyNow: 'Acheter maintenant',
+                contactSeller: 'Contacter le vendeur',
+                contactStore: 'Contacter la boutique',
+                to: 'À',
+                messagePlaceholder: 'Écrivez votre message ici...',
+                sendMessage: 'Envoyer le message',
+                sending: '...',
+                addedToCart: 'Ajouté au panier avec succès ! 🛒',
+                inquirySubject: 'Demande à propos de : ',
+                currency: 'دج',
+            };
+        }
+        if (locale === 'tr') {
+            return {
+                back: 'Geri',
+                notFound: 'Ürün bulunamadı',
+                trustedStore: 'Güvenilir mağaza',
+                sizeLabel: 'Bedeniniz',
+                description: 'Açıklama',
+                defaultDescription: 'Bu ürün, yüksek kalite ve dayanıklılığı temsil etmek için özenle seçilmiştir.',
+                buyNow: 'Şimdi satın al',
+                contactSeller: 'Satıcıyla iletişim',
+                contactStore: 'Mağaza ile iletişim',
+                to: 'Kime',
+                messagePlaceholder: 'Mesajınızı buraya yazın...',
+                sendMessage: 'Mesajı gönder',
+                sending: '...',
+                addedToCart: 'Sepete başarıyla eklendi! 🛒',
+                inquirySubject: 'Hakkında soru: ',
+                currency: 'دج',
+            };
+        }
+        return {
+            back: 'العودة',
+            notFound: 'المنتج غير موجود',
+            trustedStore: 'متجر موثوق',
+            sizeLabel: 'حجمك',
+            description: 'الوصف',
+            defaultDescription: 'هذا المنتج مختار بعناية لتمثيل الجودة الرفيعة والمتانة، مناسب جداً للاستخدام اليومي والمهني.',
+            buyNow: 'شراء الآن',
+            contactSeller: 'تواصل مع البائع',
+            contactStore: 'تواصل مع المتجر',
+            to: 'إلى',
+            messagePlaceholder: 'اكتب استفسارك هنا...',
+            sendMessage: 'إرسال الرسالة',
+            sending: '...',
+            addedToCart: 'تمت الإضافة إلى السلة بنجاح! 🛒',
+            inquirySubject: 'استفسار عن: ',
+            currency: 'دج',
+        };
+    })();
+
     if (loading) {
         return (
-            <div className="product-detail-page" dir="rtl">
+            <div className="product-detail-page" dir={dir}>
                 <header className="product-detail-header">
                     <button className="icon-btn" onClick={() => navigate(-1)}><FiChevronLeft size={24} /></button>
                 </header>
@@ -67,8 +130,8 @@ export default function ProductDetail() {
     if (!book) {
         return (
             <div className="product-detail-page empty">
-                <button onClick={() => navigate(-1)}>العودة</button>
-                <h3>المنتج غير موجود</h3>
+                <button onClick={() => navigate(-1)}>{texts.back}</button>
+                <h3>{texts.notFound}</h3>
             </div>
         );
     }
@@ -87,7 +150,7 @@ export default function ProductDetail() {
     ].filter(Boolean).map(url => getProductImage(url));
 
     return (
-        <div className="product-detail-page" dir="rtl">
+        <div className="product-detail-page" dir={dir}>
             {/* Header */}
             <header className="product-detail-header">
                 <button className="icon-btn header-back" onClick={() => navigate(-1)}>
@@ -153,7 +216,7 @@ export default function ProductDetail() {
                         </div>
                     </div>
                 </div>
-                <div className="price-tag">{book.discount_price || book.price} دج</div>
+                <div className="price-tag">{book.discount_price || book.price} {texts.currency}</div>
                 </div>
 
                 {/* Vendor Section */}
@@ -174,7 +237,7 @@ export default function ProductDetail() {
                             </div>
                             <div className="vendor-text-mini">
                                 <span className="vendor-name-mini">{book.profiles.store_name || book.profiles.full_name}</span>
-                                <span className="vendor-label-mini">متجر موثوق</span>
+                                <span className="vendor-label-mini">{texts.trustedStore}</span>
                             </div>
                         </div>
                         <FiChevronLeft className="vendor-arrow-mini" size={18} />
@@ -184,7 +247,7 @@ export default function ProductDetail() {
                 {/* Size Selector */}
                 {book.sizes && book.sizes.length > 0 && (
                     <div className="selection-section">
-                        <h4 className="section-label">حجمك (Your Size)</h4>
+                        <h4 className="section-label">{texts.sizeLabel}</h4>
                         <div className="size-grid">
                             {book.sizes.map(size => (
                                 <button 
@@ -200,9 +263,9 @@ export default function ProductDetail() {
                 )}
 
                 <div className="description-section">
-                    <h4 className="section-label">الوصف</h4>
+                    <h4 className="section-label">{texts.description}</h4>
                     <p className="product-description">
-                        {book.description || "هذا المنتج مختار بعناية لتمثيل الجودة الرفيعة والمتانة، مناسب جداً للاستخدام اليومي والمهني."}
+                        {book.description || texts.defaultDescription}
                     </p>
                 </div>
 
@@ -228,16 +291,16 @@ export default function ProductDetail() {
                                     }, { onConflict: 'user_id, product_id' });
                                 
                                 if (error) throw error;
-                                alert('تمت الإضافة إلى السلة بنجاح! 🛒');
+                                alert(texts.addedToCart);
                             } catch (err) {
                                 console.error('Error:', err);
                             }
                         }}
                     >
-                        شراء الآن
+                        {texts.buyNow}
                     </button>
                     <button className="btn-contact-seller" onClick={() => setIsMessageModalOpen(true)}>
-                        تواصل مع البائع
+                        {texts.contactSeller}
                     </button>
                 </div>
 
@@ -246,7 +309,7 @@ export default function ProductDetail() {
                     <div className="modal-overlay" onClick={() => setIsMessageModalOpen(false)}>
                         <div className="message-modal glass animate-up" onClick={e => e.stopPropagation()}>
                             <div className="message-modal__header">
-                                <h3>تواصل مع المتجر</h3>
+                                <h3>{texts.contactStore}</h3>
                                 <button className="close-btn" onClick={() => setIsMessageModalOpen(false)}>
                                     <FiX />
                                 </button>
@@ -264,13 +327,13 @@ export default function ProductDetail() {
                                             institution_id: book.seller_id,
                                             sender_id: user.id,
                                             sender_name: user.user_metadata?.full_name || user.email,
-                                            subject: `استفسار عن: ${book.name}`,
+                                            subject: `${texts.inquirySubject}${book.name}`,
                                             content: messageContent,
                                             type: 'store_query'
                                         }]);
                                     
                                     if (error) throw error;
-                                    alert('تم إرسال رسالتك بنجاح!');
+                                    alert(locale === 'ar' ? 'تم إرسال رسالتك بنجاح!' : locale === 'fr' ? 'Message envoyé avec succès !' : 'Mesajınız başarıyla gönderildi!');
                                     setIsMessageModalOpen(false);
                                     setMessageContent('');
                                 } catch (err) {
@@ -279,15 +342,15 @@ export default function ProductDetail() {
                                     setSendingMessage(false);
                                 }
                             }}>
-                                <p className="recipient-label">إلى: <strong>{book.profiles.store_name || book.profiles.full_name}</strong></p>
+                                <p className="recipient-label">{texts.to}: <strong>{book.profiles.store_name || book.profiles.full_name}</strong></p>
                                 <textarea 
-                                    placeholder="اكتب استفسارك هنا..."
+                                    placeholder={texts.messagePlaceholder}
                                     value={messageContent}
                                     onChange={e => setMessageContent(e.target.value)}
                                     required
                                 />
                                 <button type="submit" className="btn-send-message" disabled={sendingMessage}>
-                                    {sendingMessage ? '...' : 'إرسال الرسالة'}
+                                    {sendingMessage ? texts.sending : texts.sendMessage}
                                 </button>
                             </form>
                         </div>

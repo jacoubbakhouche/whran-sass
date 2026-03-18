@@ -36,7 +36,7 @@ export default function Header() {
 
                 <div className="header__actions">
                     <button className="header__lang-btn" onClick={toggleLocale} title={t('language')}>
-                        {locale === 'ar' ? 'FR' : 'عر'}
+                        {locale === 'ar' ? 'FR' : locale === 'fr' ? 'TR' : 'عر'}
                     </button>
                     <button className="header__icon-btn" onClick={toggleDark} title="Toggle theme">
                         {darkMode ? <FiSun size={18} /> : <FiMoon size={18} />}

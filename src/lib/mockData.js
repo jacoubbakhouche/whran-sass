@@ -41,14 +41,17 @@ export const BALADIYAS = [
 ];
 
 export const INSTITUTION_TYPES = [
-    { id: 1, name_ar: 'روضة أطفال', name_fr: 'Crèche / Jardin d\'enfants', icon: '🧒', color: '#F472B6' },
-    { id: 2, name_ar: 'مدرسة ابتدائية', name_fr: 'École Primaire', icon: '📚', color: '#60A5FA' },
-    { id: 3, name_ar: 'متوسطة', name_fr: 'CEM (Collège)', icon: '🏫', color: '#34D399' },
-    { id: 4, name_ar: 'ثانوية', name_fr: 'Lycée', icon: '🎓', color: '#A78BFA' },
-    { id: 5, name_ar: 'جامعة', name_fr: 'Université', icon: '🏛️', color: '#F59E0B' },
-    { id: 6, name_ar: 'مركز تكوين مهني', name_fr: 'Centre de Formation Professionnelle', icon: '⚙️', color: '#F97316' },
-    { id: 7, name_ar: 'مدرسة خاصة', name_fr: 'École Privée', icon: '⭐', color: '#EC4899' },
-    { id: 8, name_ar: 'مدرسة قرآنية', name_fr: 'École Coranique', icon: '🕌', color: '#14B8A6' },
+    { id: 1, value: 'kindergarten', name_ar: 'روضة أطفال', name_fr: 'Crèche / Jardin d\'enfants', icon: '🧒', color: '#F472B6' },
+    { id: 2, value: 'primary', name_ar: 'مدرسة ابتدائية', name_fr: 'École Primaire', icon: '📚', color: '#60A5FA' },
+    { id: 9, value: 'private_primary', name_ar: 'مدرسة ابتدائية خاصة', name_fr: 'École primaire privée', icon: '⭐', color: '#8B5CF6' },
+    { id: 3, value: 'middle', name_ar: 'متوسطة', name_fr: 'CEM (Collège)', icon: '🏫', color: '#34D399' },
+    { id: 4, value: 'high', name_ar: 'ثانوية', name_fr: 'Lycée', icon: '🎓', color: '#A78BFA' },
+    { id: 10, value: 'private_high', name_ar: 'مدرسة عالية خاصة', name_fr: 'École supérieure privée', icon: '🎓', color: '#6366F1' },
+    { id: 5, value: 'university', name_ar: 'جامعة', name_fr: 'Université', icon: '🏛️', color: '#F59E0B' },
+    { id: 6, value: 'training', name_ar: 'مركز تكوين مهني', name_fr: 'Centre de Formation Professionnelle', icon: '⚙️', color: '#F97316' },
+    { id: 11, value: 'private_institute', name_ar: 'معهد خاص', name_fr: 'Institut privé', icon: '🏢', color: '#0EA5E9' },
+    { id: 7, value: 'private', name_ar: 'مدرسة خاصة', name_fr: 'École Privée', icon: '⭐', color: '#EC4899' },
+    { id: 8, value: 'quranic', name_ar: 'مدرسة قرآنية', name_fr: 'École Coranique', icon: '🕌', color: '#14B8A6' },
 ];
 
 export const MOCK_INSTITUTIONS = [

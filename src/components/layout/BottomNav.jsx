@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { FiHome, FiMap, FiSearch, FiBook, FiUser, FiGrid, FiBell, FiMessageSquare, FiTrendingUp, FiShoppingBag, FiTruck } from 'react-icons/fi';
+import { FiHome, FiMap, FiSearch, FiBook, FiGrid, FiBell, FiMessageSquare, FiTrendingUp, FiShoppingBag, FiTruck, FiUser } from 'react-icons/fi';
 import { useAuth } from '../../contexts/AuthContext';
 import './BottomNav.css';
 
@@ -9,7 +9,6 @@ const userTabs = [
   { to: '/search',  icon: <FiSearch size={22} />, label: 'البحث'      },
   { to: '/profile/messages', icon: <FiMessageSquare size={22} />, label: 'الرسائل' },
   { to: '/store',   icon: <FiBook size={22} />, label: 'المكتبة'    },
-  { to: '/profile', icon: <FiUser size={22} />, label: 'ملفي'       },
 ];
 
 const institutionTabs = [

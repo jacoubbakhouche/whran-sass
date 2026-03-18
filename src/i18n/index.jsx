@@ -214,6 +214,110 @@ const translations = {
         arabic: 'Arabe',
         french: 'Français',
     }
+    ,
+    tr: {
+        appName: 'Edu-Expert',
+        appSlogan: 'Edu-Expert ile eğitim geleceğini keşfet',
+        appDescription: 'Cezayir’de eğitim kurumlarını bulmak için Edu-Expert platformu',
+
+        home: 'Ana sayfa',
+        search: 'Arama',
+        about: 'Hakkımızda',
+        contact: 'İletişim',
+        login: 'Giriş yap',
+        register: 'Kayıt ol',
+        admin: 'Kontrol paneli',
+        logout: 'Çıkış',
+
+        searchPlaceholder: 'Okul, üniversite veya eğitim merkezi ara...',
+        searchButton: 'Ara',
+        filters: 'Filtreler',
+        allTypes: 'Tüm türler',
+        allWilayas: 'Tüm iller',
+        sortBy: 'Sırala',
+        sortByRating: 'Puan',
+        sortByName: 'İsim',
+        sortByDistance: 'Mesafe',
+        results: 'sonuç',
+        noResults: 'Sonuç yok',
+        noResultsDescription: 'Arama kriterlerini değiştirmeyi deneyin',
+
+        viewProfile: 'Profili görüntüle',
+        programs: 'Programlar ve uzmanlıklar',
+        reviews: 'Yorumlar',
+        writeReview: 'Yorum yaz',
+        students: 'öğrenci',
+        contactInfo: 'İletişim bilgileri',
+        address: 'Adres',
+        phone: 'Telefon',
+        email: 'E-posta',
+        website: 'Web sitesi',
+        similarInstitutions: 'Benzer kurumlar',
+        openOnMap: 'Haritada göster',
+        sendMessage: 'Mesaj gönder',
+        share: 'Paylaş',
+
+        mapView: 'Harita görünümü',
+        listView: 'Liste görünümü',
+        satellite: 'Uydu',
+        streets: 'Sokaklar',
+        myLocation: 'Konumum',
+
+        kindergarten: 'Anaokulu',
+        primary: 'İlkokul',
+        middle: 'Ortaokul',
+        high: 'Lise',
+        university: 'Üniversite',
+        vocational: 'Mesleki eğitim',
+        private: 'Özel okul',
+        quranic: 'Kur’an okulu',
+
+        totalInstitutions: 'kurum',
+        totalWilayas: 'il',
+        totalReviews: 'yorum',
+        totalUsers: 'kullanıcı',
+
+        dashboard: 'Kontrol paneli',
+        institutionManagement: 'Kurum yönetimi',
+        userManagement: 'Kullanıcı yönetimi',
+        statistics: 'İstatistikler',
+        settings: 'Ayarlar',
+        pending: 'Beklemede',
+        approved: 'Onaylandı',
+        rejected: 'Reddedildi',
+        approve: 'Onayla',
+        reject: 'Reddet',
+        delete: 'Sil',
+        edit: 'Düzenle',
+        view: 'Görüntüle',
+        status: 'Durum',
+        actions: 'İşlemler',
+        totalPending: 'Bekleyen başvurular',
+        approvedToday: 'Bugün onaylananlar',
+        recentActivity: 'Son etkinlik',
+        overview: 'Genel bakış',
+        registrationsPerMonth: 'Aylık kayıtlar',
+        institutionsByType: 'Türe göre kurumlar',
+        institutionsByWilaya: 'İle göre kurumlar',
+        adminLogin: 'Yönetici girişi',
+        adminPassword: 'Şifre',
+
+        loading: 'Yükleniyor...',
+        error: 'Bir hata oluştu',
+        retry: 'Tekrar dene',
+        cancel: 'İptal',
+        save: 'Kaydet',
+        confirm: 'Onayla',
+        close: 'Kapat',
+        next: 'Sonraki',
+        previous: 'Önceki',
+        showing: 'Gösteriliyor',
+        of: ' / ',
+        language: 'Dil',
+        arabic: 'Arapça',
+        french: 'Fransızca',
+        turkish: 'Türkçe',
+    }
 };
 
 const I18nContext = createContext();
@@ -228,12 +332,19 @@ export function I18nProvider({ children }) {
     const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
     const toggleLocale = useCallback(() => {
-        setLocale(prev => prev === 'ar' ? 'fr' : 'ar');
+        setLocale(prev => (prev === 'ar' ? 'fr' : prev === 'fr' ? 'tr' : 'ar'));
     }, []);
 
     const getField = useCallback((obj, field) => {
         if (!obj) return '';
-        return obj[`${field}_${locale === 'ar' ? 'ar' : 'fr'}`] || obj[`${field}_ar`] || obj[field] || '';
+        const suffix = locale === 'ar' ? 'ar' : locale === 'tr' ? 'tr' : 'fr';
+        return (
+            obj[`${field}_${suffix}`] ||
+            obj[`${field}_ar`] ||
+            obj[`${field}_fr`] ||
+            obj[field] ||
+            ''
+        );
     }, [locale]);
 
     return (
