@@ -8,8 +8,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 async function checkRLS() {
     console.log("--- RLS Policy Check ---");
     
-    // We can't directly query pg_policies with anon key.
-    // But we can try to SELECT as the user if we had their token.
+    // manjmoch directly query pg_policies with anon key.
+    // mais we can try to SELECT as the user if we had their token.
     // Since we don't have the token, let's try to see if we can "see" the product with anon key.
     
     const { data: anonProds, error: anonError } = await supabase
