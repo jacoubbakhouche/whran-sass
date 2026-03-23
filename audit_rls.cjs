@@ -22,9 +22,8 @@ async function auditPolicies() {
         console.log(`Total visible products (Select Count): ${count}`);
     }
 
-    // Try to see if we can get policy names by sniffing common names if they error
-    // Actually, I'll provide a SQL script for the user to run that gives them the report.
-    // But first, let's check one more thing: is 'seller_id' definitely correct in the schema?
+    //adi karhatni bah thalt l erorr
+    ?
 }
 
 auditPolicies();
